@@ -1,0 +1,50 @@
+﻿@using Example_POS.DTOs
+@using Example_POS.Models;
+@model RegisterModels;
+@{
+    ViewData["Title"] = "Register";
+    Layout = "Login_Layout";
+}
+
+    <h1 class="text-center fw-bolder">ITEC POS Register</h1>
+<form asp-controller="Register" asp-action="SignUp" method="POST" id="regisForm">
+        <div class="mb-3">
+            <label class="form-label" asp-for="Username"></label>
+            <input type="text" id="username" class="form-control" placeholder="Enter username" asp-for="Username">
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Email"></label>
+            <input type="email" id="email" class="form-control" placeholder="Enter email" asp-for="Email">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Password"></label>
+            <input type="password" id="password" class="form-control" placeholder="Enter password" asp-for="Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="RePassword"></label>
+            <input type="password" id="repassword" class="form-control" placeholder="Enter re-password" asp-for="RePassword">
+            <span asp-validation-for="RePassword" class="text-danger"></span>
+        </div>
+        <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </div>
+        <div class="text-center">
+            <p>You don't have account? <a asp-controller="Login" asp-action="Index">SignIn</a></p>
+        </div>
+    </form>
+
+@section Scripts {
+    <script>
+        // const form = document.getElementById("regisForm");
+        // form.addEventListener("submit",()=>{
+        //     const pass = document.getElementById("repassword");
+        //     const repass = document.getElementById("repassword-validate");
+        //     if (repass != pass){
+        //         repass.textContent = "Please enter the same password"
+        //     }
+        // })
+    </script>
+}

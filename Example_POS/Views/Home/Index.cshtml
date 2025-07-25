@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var msg = "";
+    if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        msg = ViewBag.Message;
+    }
+    // var msg = ViewBag.Message;
+}
+
+@if (string.IsNullOrEmpty(msg))
+{
+    <div id="autoDismissAlert" class="d-none alert alert-@(msg.ToString().Contains("Success") ? "success" : "danger")" role="alert">
+        @msg
+    </div>
+}
+<div class="d-flex flex-column justify-content-center align-items-center text-center w-100" style="min-height:80vh;">
+        @if (!string.IsNullOrEmpty(ViewBag.Username))
+        {
+        <h1 class="display-4">Welcome <span class="text-uppercase fw-bold">@ViewBag.Username!</span></h1>
+        <p>
+            Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.
+        </p>
+        }
+    @if (ViewBag.Email != null)
+    {
+        <p>@ViewBag.Email</p>
+    }
+    @if (ViewBag.Password != null)
+    {
+        <p>@ViewBag.Password</p>
+    }
+    <button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button>
+</div>
+
+@* Toast Components*@
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="..." class="rounded me-2" alt="...">
+            @* <strong class="me-auto">LOGIN</strong> *@
+            @if (!string.IsNullOrEmpty(msg))
+            {
+                @if (msg.Contains("login", StringComparison.OrdinalIgnoreCase))
+                {
+                    <strong class="me-auto">Login</strong>
+                }
+                else if (msg.Contains("register", StringComparison.OrdinalIgnoreCase))
+                {
+                    <strong class="me-auto">Register</strong>
+                }
+            }
+            @* <small>11 mins ago</small> *@
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            @if (!string.IsNullOrEmpty(msg))
+            {
+                <div>@msg</div>
+            }
+            else
+            {
+                <div>No Message</div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        console.log("Email"+": "+"@ViewBag.Email")
+        console.log("Password"+": "+"@ViewBag.Password")
+        console.log("Message"+": "+"@msg")
+        console.log("Username"+": "+"@ViewBag.Username")
+
+        // AlertBox
+        setTimeout(()=>{
+                const alertBox = document.getElementById("autoDismissAlert");
+                if (alertBox) {
+                    alertBox.remove();
+                }
+            }, 2500);
+
+        // Toast Notification
+        if ("@msg" != "")
+        {
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
+            toastBootstrap.show()
+        }
+
+        // Toasts
+        const toastTrigger = document.getElementById('liveToastBtn')
+        const toastLiveExample = document.getElementById('liveToast')
+        if (toastTrigger) {
+          const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+          toastTrigger.addEventListener('click', () => {
+              console.log("click")
+            toastBootstrap.show()
+          })
+        }
+    </script>
+}

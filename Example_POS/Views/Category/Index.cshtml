@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Category";
+    IEnumerable<Category> cat = ViewBag.Category;
+}
+
+<h5>Add Category</h5>
+<div class="bg-dark p-2" style="border-radius:10px;">
+    <div class="text-light">
+        <form id="createCategoryForm" class="row" asp-controller="Category" asp-action="Create">
+            <div class="col-5">
+                <label class="form-label">Name</label>
+                <input class="form-control" type="text" name="Name" placeholder="Enter name" />
+            </div>
+            <div class="col-5">
+                <label class="form-label">Description</label>
+                <input class="form-control" type="text" name="Description" placeholder="Enter description" />
+            </div>
+            <div class="col-2 d-flex flex-column justify-content-end">
+                <button type="submit" class="btn btn-primary" id="add-btn">Create Category</button>
+                <button type="submit" class="btn btn-primary d-none" id="add-btn">Update Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3">
+    <label class="form-label">Search</label>
+    <input class="form-control" type="text" placeholder="Search by Product name and description" />
+</div>
+
+<h1 class="mt-3">Catagories</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created by</th>
+            <th>Created Time</th>
+            <th>Updated by</th>
+            <th>Updated Time</th>
+            <th>Deleted</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (cat != null)
+        {
+            @foreach (var cat_ in cat)
+            {
+                <tr>
+                    <td>@cat_.Id</td>
+                    <td class="catName">@cat_.Name</td>
+                    <td class="catDesc">@cat_.Description</td>
+                    <td>@cat_.CreateBy</td>
+                    <td>@cat_.CreateTime</td>
+                    <td>@cat_.UpdateBy</td>
+                    <td>@cat_.UpdateTime</td>
+                    <td>
+                        @if (@cat_.IsDelete == 0)
+                        {
+                            <p class="fw-bold text-success">No</p>
+                        }
+                        @if (@cat_.IsDelete == 1)
+                        {
+                            <p class="fw-bold text-danger">Yes</p>
+                        }
+                    </td>
+                    <td><button class="btn btn-warning edit-btn">Edit</button></td>
+                    <td>
+                        <form asp-controller="Category" asp-action="Delete" asp-route-Id="@cat_.Id">
+                            <button id="btn-del" class="btn btn-danger" >Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <script>
+        $('#categoryForm').on('submit', function (e) {
+        e.preventDefault();
+            const name = $('input[name="Name"]').val();
+            const description = $('input[name="Description"]').val();
+
+            $.ajax({
+                type: 'GET',
+                data: {
+                    Name: name,
+                    Description: description
+                },
+                success: function (response) {
+                    alert("Success!");
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    alert("Error occurred: " + xhr.responseText);
+                }
+            });
+        });
+
+        $('.edit-btn').on("click", function (e) {
+            e.preventDefault();
+
+            const row = $(this).closest('tr');
+            const name = row.find('td:eq(1)').text().trim(); // column 2 (Name)
+            const desc = row.find('td:eq(2)').text().trim(); // column 3 (Description)
+
+            $
+
+            $('input[name="Name"]').val(name);
+            $('input[name="Description"]').val(desc);
+        });
+
+    </script>
+}
