@@ -1,5 +1,5 @@
 ﻿using Example_POS.Data;
-using Example_POS.DTOs;
+using Example_POS.DTOs.User;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -45,7 +45,7 @@ namespace Example_POS.Controllers
             //    TempData["Password"] = password;
             //    return RedirectToAction("Index", "Home");
             //}
-            User user = _db.Users.FirstOrDefault(u => u.Email == obj.Email);
+            User? user = _db.Users.FirstOrDefault(u => u.Email == obj.Email);
             if (user != null && user.Password == obj.Password)
             {
                 TempData["Message"] = "Login Success!";

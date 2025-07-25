@@ -1,5 +1,5 @@
 ﻿using Example_POS.Data;
-using Example_POS.DTOs;
+using Example_POS.DTOs.User;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -34,7 +34,7 @@ namespace Example_POS.Controllers
                 return View("Index", obj);
             }
 
-            User username = _db.Users.FirstOrDefault(u => u.Username == obj.Username);
+            User? username = _db.Users.FirstOrDefault(u => u.Username == obj.Username);
             string _sql = "SELECT * FROM Users WHERE Username = @username";
             var user = _db.Users
                 .FromSqlRaw(_sql, new SqlParameter("@username", obj.Username))
@@ -44,7 +44,7 @@ namespace Example_POS.Controllers
                 ModelState.AddModelError("Username", "Username already use.");
                 return View("Index", obj);
             }
-            User email = _db.Users.FirstOrDefault(u => u.Email == obj.Email);
+            User? email = _db.Users.FirstOrDefault(u => u.Email == obj.Email);
             if (email != null)
             {
                 ModelState.AddModelError("Email", "Email already use.");

@@ -1,5 +1,5 @@
 ﻿using Example_POS.Data;
-using Example_POS.DTOs;
+using Example_POS.DTOs.User;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -58,7 +58,7 @@ namespace Example_POS.Controllers
             }
 
             string checkEmailSQL = "SELECT * FROM Users WHERE Email=@email";
-            User sameEmail = _db.Users.FromSqlRaw(checkEmailSQL, new SqlParameter("@email", userUpdateData.Email)).FirstOrDefault();
+            User? sameEmail = _db.Users.FromSqlRaw(checkEmailSQL, new SqlParameter("@email", userUpdateData.Email)).FirstOrDefault();
             if (sameEmail != null && sameEmail.Id != userUpdateData.Id)
             {
                 ModelState.AddModelError("UpdateForm.Email", "Email already use.");
@@ -74,7 +74,7 @@ namespace Example_POS.Controllers
             }
 
             string checkUsernameSQL = "SELECT * FROM Users WHERE Username=@username";
-            User checkUsername = _db.Users.FromSqlRaw(checkUsernameSQL, new SqlParameter("@username", userUpdateData.Username)).FirstOrDefault();
+            User? checkUsername = _db.Users.FromSqlRaw(checkUsernameSQL, new SqlParameter("@username", userUpdateData.Username)).FirstOrDefault();
             if (checkUsername != null && checkUsername.Id != userUpdateData.Id)
             {
                 ModelState.AddModelError("UpdateForm.Username", "Username already use.");

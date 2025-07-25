@@ -1,4 +1,6 @@
 ﻿using Example_POS.DTOs.Category;
+using Example_POS.DTOs.Product;
+using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -15,73 +17,82 @@ namespace Example_POS.Controllers
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            // Default SQL Connection
-            string strConnection = string.Empty;
-            SqlConnection? mySqlConnection = null;
-            SqlCommand? mySqlCommand = null;
-            StringBuilder? strCommand = new("");
-            int NumberOfRows = 0;
-            string ColumnName = "";
-            SqlDataReader? mySqlDataReader = null; // one
-            SqlDataAdapter? mySqlDataAdapter = null; // many
-            DataSet ListDataSet = new DataSet();
+            return View();
+        }
 
-            // Properties
-            string CatName = "";
-            int catId = 0;
-            CategoryOptions TempCat = null;
-            List<CategoryOptions> CatList = [];
+        // Create
+        [HttpPost]
+        public async Task<IActionResult> Create(AddProduct newProductData)
+        {
+            string? strConnection = string.Empty;
+            SqlConnection? mySqlConnection = null;
+
+            SqlCommand? sqlCheckDupName = null;
+            StringBuilder? strCheckDupName = new("");
+
+            SqlCommand? sqlInsertCommand = null;
+            StringBuilder? strInsert = new("");
+
+            int NumberOfRows = 0;
+            SqlDataReader? mySqlDataReader = null; // one
+
             try
             {
-                //strConnection = AuthVariable.MVCConnectionString;
-                mySqlConnection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+                // Database Connection
+                strConnection = _configuration.GetConnectionString("DefaultConnection");
+                mySqlConnection = new SqlConnection(strConnection);
                 await mySqlConnection.OpenAsync();
-                mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandTimeout = 0;
 
-                strCommand = new StringBuilder("");
-                strCommand.Append(" SELECT ID, Name FROM Categories");
-
-                mySqlCommand.CommandText = strCommand.ToString();
-                mySqlDataAdapter = new SqlDataAdapter();
-                mySqlDataAdapter.SelectCommand = mySqlCommand;
-                ListDataSet.Dispose();
-                ListDataSet = new DataSet();
-                NumberOfRows = mySqlDataAdapter.Fill(ListDataSet, "Result");
-                mySqlDataAdapter.Dispose();
-
-                foreach (DataRow ListItem in ListDataSet.Tables["Result"]!.Rows)
-                {
-                    ColumnName = "Name";
-                    if (ListItem.IsNull(ColumnName))
-                        CatName = "";
-                    else
-                        CatName = Convert.ToString(ListItem[ColumnName])!;
-
-                    ColumnName = "Id";
-                    catId = Convert.ToInt32(ListItem[ColumnName]);
-
-                    TempCat = new()
-                    {
-                        Id = catId,
-                        Name = CatName,
-
-                    };
-                    CatList.Add(TempCat);
-                    //CatList.Add( new CategoryDTO
-                    //{
-                    //    Id = catId,
-                    //    Name = CategoryName
-                    //});
-                }
-                ViewBag.Category = CatList;
-                return View();
+                return Ok();
             }
-            catch(Exception e)
+            catch
             {
-                return View(e);
+                return BadRequest();
+            }
+        }
+
+        // Update
+        [HttpPost]
+        public async Task<IActionResult> Update(EditProduct updateProductData)
+        {
+            string? strConnection = string.Empty;
+            SqlConnection? mySqlConnection = null;
+
+            try
+            {
+                // Database Connection
+                strConnection = _configuration.GetConnectionString("DefaultConnection");
+                mySqlConnection = new SqlConnection(strConnection);
+                await mySqlConnection.OpenAsync();
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        // Delete
+        public async Task<IActionResult> Delete(int id)
+        {
+            string? strConnection = string.Empty;
+            SqlConnection? mySqlConnection = null;
+
+            try
+            {
+                // Database Connection
+                strConnection = _configuration.GetConnectionString("DefaultConnection");
+                mySqlConnection = new SqlConnection(strConnection);
+                await mySqlConnection.OpenAsync();
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
             }
         }
     }
