@@ -22,7 +22,7 @@ namespace Example_POS.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Search(string keyword)
+        public async Task<IActionResult> Search(string keyword, string? Delete, string? Category)
         {
             string? strConnection = string.Empty;
             SqlConnection? mySqlConnection = null;
@@ -75,9 +75,25 @@ namespace Example_POS.Controllers
                 strCommand.Append("Products.IsDelete ");
                 strCommand.Append("FROM Products ");
                 strCommand.Append("LEFT JOIN Categories ON Products.CategoryId = Categories.Id ");
-                strCommand.Append("WHERE Products.Name LIKE @Name");
+                strCommand.Append("WHERE Products.Name LIKE @Name ");
+                if (Delete != null)
+                {
+                    strCommand.Append("AND Products.IsDelete = @Delete");
+                }
+                if (Category != null)
+                {
+                    strCommand.Append("AND Products.CategoryId = @CategoryId");
+                }
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlCommand.Parameters.AddWithValue("@Name", "%" + keyword + "%");
+                if (Delete != null)
+                {
+                    mySqlCommand.Parameters.AddWithValue("@Delete", Delete);
+                }
+                if (Category != null)
+                {
+                    mySqlCommand.Parameters.AddWithValue("@CategoryId", Category);
+                }
                 mySqlDataAdapter = new SqlDataAdapter();
                 mySqlDataAdapter.SelectCommand = mySqlCommand;
                 ListDataSet.Dispose();
@@ -149,7 +165,6 @@ namespace Example_POS.Controllers
                     AllProducts.Add(product);
                 }
 
-                //ViewBag.Category = AllCategories;
                 return Ok(AllProducts);
             }
             catch (Exception e)
@@ -269,7 +284,7 @@ namespace Example_POS.Controllers
                 myInsertSqlCommand.CommandTimeout = 0;
                 updateCommand = new StringBuilder();
                 updateCommand.Append("UPDATE Products ");
-                updateCommand.Append("SET CategoryId = @CategoryId, Name = @Name, Quantity = @Quantity, Price = @Price, Description = @Description, UpdateBy = @UpdateBy, UpdateTime = @UpdateTime ");
+                updateCommand.Append("SET CategoryId = @CategoryId, Name = @Name, Quantity = @Quantity, Price = @Price, Description = @Description, UpdateBy = @UpdateBy, UpdateTime = @UpdateTime, isDelete = @Delete ");
                 updateCommand.Append("WHERE Id = @Id");
                 myInsertSqlCommand.CommandText = updateCommand.ToString();
                 myInsertSqlCommand.Parameters.AddWithValue("@CategoryId", updateProductData.CategoryId);
@@ -280,6 +295,7 @@ namespace Example_POS.Controllers
                 myInsertSqlCommand.Parameters.AddWithValue("@UpdateBy", 0);
                 myInsertSqlCommand.Parameters.AddWithValue("@UpdateTime", DateTime.Now);
                 myInsertSqlCommand.Parameters.AddWithValue("@Id", updateProductData.Id);
+                myInsertSqlCommand.Parameters.AddWithValue("@Delete", updateProductData.Delete);
                 NumberOfRows = await myInsertSqlCommand.ExecuteNonQueryAsync();
 
                 return Ok("Update Product success!");
@@ -310,10 +326,12 @@ namespace Example_POS.Controllers
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder();
                 strCommand.Append("UPDATE Products ");
-                strCommand.Append("SET IsDelete = 1 ");
-                strCommand.Append("WHERE Id = @Id");
+                strCommand.Append("SET IsDelete = 1, UpdateTime = @UpdateAt, UpdateBy = @UpdateBy ");
+                strCommand.Append("WHERE Id = @Id");    
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlCommand.Parameters.AddWithValue("@Id", id);
+                mySqlCommand.Parameters.AddWithValue("@UpdateAt", DateTime.Now);
+                mySqlCommand.Parameters.AddWithValue("@UpdateBy", 0);
                 NumberOfRows = await mySqlCommand.ExecuteNonQueryAsync();
 
                 return Ok("Delete Category success!");

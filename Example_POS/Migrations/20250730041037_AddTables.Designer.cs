@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example_POS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250729030413_AlterProducts")]
-    partial class AlterProducts
+    [Migration("20250730041037_AddTables")]
+    partial class AddTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

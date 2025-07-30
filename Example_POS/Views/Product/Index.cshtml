@@ -5,7 +5,7 @@
 }
 
 @* ADD / UPDATE *@
-<h5 id="title">Add Product</h5>
+<h1 class="mt-3">Products</h1>
 <div class="bg-dark p-2" style="border-radius:10px;">
     <form id="productForm">
         <div class="row text-light">
@@ -28,11 +28,19 @@
                 <label class="form-label">Price</label>
                 <input class="form-control" type="text" name="price" placeholder="Enter Price" />
             </div>
-            <div class="col-3">
+            <div class="col">
                 <label class="form-label">Description</label>
                 <input class="form-control" type="text" name="description" placeholder="Enter description" />
             </div>
-            <div class="col-2 d-flex flex-column justify-content-end">
+            <div class="col-2 d-none" id="select-menu">
+                <label class="form-label">Deleted</label>
+                <select class="form-select" name="Delete" aria-label="Default select example">
+                    <option selected value="">Delete select menu</option>
+                    <option value="0" class="text-success fw-bold">No</option>
+                    <option value="1" class="text-danger fw-bold">Yes</option>
+                </select>
+            </div>
+            <div class="col d-flex flex-column justify-content-end">
                 <button type="submit" class="btn btn-primary" id="add-btn">Create</button>
                 <button type="submit" class="btn btn-success d-none" id="update-btn">Update</button>
             </div>
@@ -40,36 +48,52 @@
     </form>
 </div>
 @* SEARCH *@
-<div class="mt-3">
+<div class="mt-1">
     <form id="searchForm" class="row">
-        <div class="col-5">
-            <label class="form-label">Search</label>
-            <input class="form-control" type="text" placeholder="Search by name" id="search" />
+        @* Search Name *@
+        <div class="col">
+            <label class="form-label">Name</label>
+            <input class="form-control bg-dark text-light" type="text" placeholder="Search by name" id="search" />
         </div>
-        <div class="col-7 d-flex align-items-end">
+        @* Search Deleted *@
+        <div class="col">
+            <label class="form-label">Category</label>
+            <select class="form-select bg-dark text-light" aria-label="Default select example" id="cat-select-search">
+                <option selected value="">All</option>
+            </select>
+        </div>
+        @* Search Deleted *@
+        <div class="col">
+            <label class="form-label">Deleted</label>
+            <select class="form-select bg-dark text-light" aria-label="Default select example" id="del-select">
+                <option selected value="">All</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        <div class="col d-flex align-items-end">
             <button class="btn btn-success">Search</button>
         </div>
     </form>
 </div>
 @* TABLE *@
-<h1 class="mt-3">Products</h1>
-<table class="table">
+<table class="mt-2 table table-dark table-striped">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>CategoryId</th>
-            <th>CategoryName</th>
-            <th>Created by</th>
-            <th>Created Time</th>
-            <th>Updated by</th>
-            <th>Updated Time</th>
-            <th>Deleted</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">CategoryId</th>
+            <th scope="col">CategoryName</th>
+            <th scope="col">Created by</th>
+            <th scope="col">Created Time</th>
+            <th scope="col">Updated by</th>
+            <th scope="col">Updated Time</th>
+            <th scope="col">Deleted</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
         </tr>
     </thead>
     <tbody id="prodTableBody"></tbody>
@@ -125,6 +149,9 @@
                         $('#cat-select').append(`
                             <option class="cat-val" value="${cat_.id}">${cat_.name}</option>
                         `);
+                        $('#cat-select-search').append(`
+                            <option class="cat-val" value="${cat_.id}">${cat_.name}</option>
+                        `);
                     });
                 },
                 error: function (xhr, status, error) {
@@ -138,11 +165,14 @@
             e.preventDefault();
 
             const name = $('input#search').val();
+            const delStatus = $('select#del-select').val();
+            const categ = $('select#cat-select-search').val();
+
             if (name !== "") {
                 $.ajax({
                     type: 'GET',
                     url: "/Product/Search",
-                    data: { keyword: name },
+                    data: { keyword: name, Delete: delStatus, Category: categ },
                     success: (response) => {
                     products = response;
 
@@ -150,19 +180,19 @@
                     products.forEach(prod_ => {
                         $('#prodTableBody').append(`
                             <tr>
-                                <td class="prodId">${prod_.id}</td>
+                                <th scope="row" class="prodId">${prod_.id}</td>
                                 <td class="prodName">${prod_.name}</td>
                                 <td class="prodQuan">${prod_.quantity}</td>
                                 <td class="prodPrice">${prod_.price}</td>
-                                <td class="prodDesc">${prod_.description}</td>
-                                <td class="catId">${prod_.categoryId}</td>
+                                <td class="prodDesc"><div style="max-height:4.2rem; overflow-y:scroll;">${prod_.description}</div></td>
+                                <td class="catId text-center">${prod_.categoryId}</td>
                                 <td class="catName">${prod_.categoryName}</td>
-                                <td>${prod_.createBy}</td>
+                                <td class="text-center">${prod_.createBy}</td>
                                 <td>${prod_.createTime}</td>
-                                <td>${prod_.updateBy}</td>
+                                <td class="text-center">${prod_.updateBy}</td>
                                 <td>${prod_.updateTime}</td>
-                                <td>
-                                    <p class="fw-bold ${prod_.isDelete == 1 ? 'text-danger' : 'text-success'}">
+                                <td class="text-center">
+                                    <p data-id=${prod_.isDelete} class="fw-bold ${prod_.isDelete == 1 ? 'text-danger' : 'text-success'}">
                                         ${prod_.isDelete == 1 ? 'Yes' : 'No'}
                                     </p>
                                 </td>
@@ -192,6 +222,7 @@
             const quantity = $('input[name="quantity"]').val();
             const price = $('input[name="price"]').val();
             const description = $('input[name="description"]').val();
+            const deleteVal = $('select[name=Delete]').val();
 
             if (cat_id == "" )
             {
@@ -216,7 +247,7 @@
                     $("h5#title").text("Add Product");
                     $("button#add-btn").removeClass("d-none");
                     $("button#update-btn").addClass("d-none");
-                    $('#edit-id').val(0);
+                    $('div#select-menu').addClass('d-none');
                 }
 
                 const url = isUpdate ? '/Product/Update' : '/Product/Create';
@@ -230,7 +261,8 @@
                         Name: name,
                         Quantity: quantity,
                         Price: price,
-                        Description: description
+                        Description: description,
+                        Delete: deleteVal
                     },
                     success: function (response) {
                         if (isUpdate){
@@ -265,12 +297,13 @@
             $("button#update-btn").removeClass("d-none");
 
             const row = $(this).closest('tr');
-            const id = row.find('td:eq(0)').text().trim();
-            const name = row.find('td:eq(1)').text().trim();
-            const quantity = row.find('td:eq(2)').text().trim();
-            const price = row.find('td:eq(3)').text().trim();
-            const desc = row.find('td:eq(4)').text().trim();
-            const catId = row.find('td:eq(5)').text().trim();
+            const id = row.find('th:eq(0)').text().trim();
+            const name = row.find('td:eq(0)').text().trim();
+            const quantity = row.find('td:eq(1)').text().trim();
+            const price = row.find('td:eq(2)').text().trim();
+            const desc = row.find('td:eq(3)').text().trim();
+            const catId = row.find('td:eq(4)').text().trim();
+            const del = row.find('td:eq(10) p').data('id');
 
             $('select#cat-select').val(catId);
             $('input[name="name"]').val(name);
@@ -278,6 +311,8 @@
             $('input[name=price]').val(price);
             $('input[name="description"]').val(desc);
             $('input#edit-id').val(id);
+            $('select[name=Delete]').val(del);
+            $('div#select-menu').removeClass('d-none');
         });
 
         function showToastNotifications(header, body)

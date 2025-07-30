@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Example_POS.Migrations
 {
     /// <inheritdoc />
-    public partial class addTable : Migration
+    public partial class AddTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,11 +22,34 @@ namespace Example_POS.Migrations
                     CreateBy = table.Column<int>(type: "int", nullable: true),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdateBy = table.Column<int>(type: "int", nullable: true),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDelete = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateBy = table.Column<int>(type: "int", nullable: true),
+                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdateBy = table.Column<int>(type: "int", nullable: true),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDelete = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,6 +73,9 @@ namespace Example_POS.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Users");
