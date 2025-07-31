@@ -60,7 +60,7 @@ namespace Example_POS.Controllers
                 mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder("");
-                strCommand.Append("SELECT TOP 5 ");
+                strCommand.Append("SELECT TOP 100 ");
                 strCommand.Append("Products.Id, ");
                 strCommand.Append("Products.CategoryId, ");
                 strCommand.Append("Categories.Name AS CategoryName, ");
@@ -78,11 +78,11 @@ namespace Example_POS.Controllers
                 strCommand.Append("WHERE Products.Name LIKE @Name ");
                 if (Delete != null)
                 {
-                    strCommand.Append("AND Products.IsDelete = @Delete");
+                    strCommand.Append("AND Products.IsDelete = @Delete ");
                 }
                 if (Category != null)
                 {
-                    strCommand.Append("AND Products.CategoryId = @CategoryId");
+                    strCommand.Append("AND Products.CategoryId = @CategoryId ");
                 }
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlCommand.Parameters.AddWithValue("@Name", "%" + keyword + "%");
@@ -334,7 +334,7 @@ namespace Example_POS.Controllers
                 mySqlCommand.Parameters.AddWithValue("@UpdateBy", 0);
                 NumberOfRows = await mySqlCommand.ExecuteNonQueryAsync();
 
-                return Ok("Delete Category success!");
+                return Ok("Delete Product success!");
             }
             catch (Exception e)
             {

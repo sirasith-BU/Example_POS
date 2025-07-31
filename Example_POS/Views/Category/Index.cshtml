@@ -1,46 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Category";
-    // IEnumerable<Category> cat = ViewBag.Category;
 }
-
-@* ADD / UPDATE *@
-<div class="d-flex justify-content-between align-items-center">
-    <h1 class="mt-3">Catagories</h1>
-    <form id="categoryForm" class="row">
-        <div class="col d-flex flex-column justify-content-end">
-            <button type="submit" class="btn btn-primary" id="add-btn">Create</button>
-            <button type="submit" class="btn btn-success d-none" id="update-btn">Update</button>
-        </div>
-    </form>
-</div>
-
-<div class="bg-dark p-2 d-none" style="border-radius:10px;">
-    <div class="text-light">
-        <form id="categoryForm" class="row">
-            <input type="hidden" name="Id" id="edit-id"/>
-            <div class="col">
-                <label class="form-label">Name</label>
-                <input class="form-control" type="text" name="Name" placeholder="Enter name" />
-            </div>
-            <div class="col">
-                <label class="form-label">Description</label>
-                <input class="form-control" type="text" name="Description" placeholder="Enter description" />
-            </div>
-            <div class="col d-none" id="select-menu">
-                <label class="form-label">Deleted</label>
-                <select class="form-select" name="Delete" aria-label="Default select example">
-                    <option selected value="">Delete select menu</option>
-                    <option value="0" class="text-success fw-bold">No</option>
-                    <option value="1" class="text-danger fw-bold">Yes</option>
-                </select>
-            </div>
-            <div class="col d-flex flex-column justify-content-end">
-                <button type="submit" class="btn btn-primary" id="add-btn">Create</button>
-                <button type="submit" class="btn btn-success d-none" id="update-btn">Update</button>
-            </div>
-        </form>
-    </div>
-</div>
+@* <h1>Catagories</h1> *@
 @* SEARCH *@
 <div class="mt-1">
     <form id="searchForm" class="row">
@@ -64,8 +25,9 @@
             <label class="form-label">Date</label>
             <input class="form-control bg-dark text-light" type="datetime-local" />
         </div> *@
-        <div class="col d-flex align-items-end">
+        <div class="col d-flex justify-content-between align-items-end">
             <button class="btn btn-success">Search</button>
+            <button type="submit" class="btn btn-primary" id="showAdd-btn">Create</button>
         </div>
     </form>
 </div>
@@ -101,47 +63,83 @@
         </div>
     </div>
 </div>
-@* ADD Product Modal *@
+@* ADD Modal *@
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="bg-dark p-2" style="border-radius:10px;">
-                    <div class="text-light">
-                        <form id="categoryForm" class="row">
-                            <input type="hidden" name="Id" id="edit-id" />
-                            <div class="col">
-                                <label class="form-label">Name</label>
-                                <input class="form-control" type="text" name="Name" placeholder="Enter name" />
+            <form id="addCategoryForm">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalLabel">Add Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-dark p-2" style="border-radius:10px;">
+                        <div class="text-light">
+                            <div class="d-flex flex-column gap-2">
+                                <input type="hidden" name="Id" id="edit-id" />
+                                <div>
+                                    <label class="form-label">Name</label>
+                                    <input class="form-control" type="text" name="add-Name" placeholder="Enter name" />
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Description</label>
+                                    <input class="form-control" type="text" name="add-Description" placeholder="Enter description" />
+                                </div>
                             </div>
-                            <div class="col">
-                                <label class="form-label">Description</label>
-                                <input class="form-control" type="text" name="Description" placeholder="Enter description" />
-                            </div>
-                            <div class="col d-none" id="select-menu">
-                                <label class="form-label">Deleted</label>
-                                <select class="form-select" name="Delete" aria-label="Default select example">
-                                    <option selected value="">Delete select menu</option>
-                                    <option value="0" class="text-success fw-bold">No</option>
-                                    <option value="1" class="text-danger fw-bold">Yes</option>
-                                </select>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Add</button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="add-btn">Create</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-@* DELETE Modal *@
+@* Update Modal *@
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="updateCategoryForm">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalLabel">Update Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-dark p-2" style="border-radius:10px;">
+                        <div class="text-light">
+                            <div class="d-flex flex-column gap-2">
+                                <input type="hidden" name="Id" id="edit-id" />
+                                <div>
+                                    <label class="form-label">Name</label>
+                                    <input class="form-control" type="text" name="update-Name" placeholder="Enter name" />
+                                </div>
+                                <div class="col">
+                                    <label class="form-label">Description</label>
+                                    <input class="form-control" type="text" name="update-Description" placeholder="Enter description" />
+                                </div>
+                                <div id="select-menu">
+                                    <label class="form-label">Deleted</label>
+                                    <select class="form-select" name="Delete" aria-label="Default select example">
+                                        <option selected value="">Delete select menu</option>
+                                        <option value="0" class="text-success fw-bold">No</option>
+                                        <option value="1" class="text-danger fw-bold">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success" id="update-btn">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@* Delete Modal *@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -164,8 +162,9 @@
 {
     <script>
         let categories = [];
-        const delModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+        const updateModal = new bootstrap.Modal(document.getElementById('updateModal'));
+        const delModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
         // Init data
         $(document).ready(function () {
@@ -205,122 +204,6 @@
                     alert("Error occurred: " + xhr.responseText);
                 }
             });
-        });
-
-        // Create | Update
-        $('#categoryForm').on('submit', function (e) {
-            e.preventDefault();
-
-            const id = $('#edit-id').val(); // hidden id
-            const name = $('input[name="Name"]').val();
-            const description = $('input[name="Description"]').val();
-            const deleteVal = $('select[name=Delete]').val();
-
-            addModal.show();
-
-            // if (name == "") 
-            // {
-            //     showToastNotifications("Name", "Please enter name");
-            // }
-            // else {
-            //     const isUpdate = !$('#update-btn').hasClass('d-none');
-
-            //     if(isUpdate){
-            //         $("h5#title").text("Add Category");
-            //         $("button#add-btn").removeClass("d-none");
-            //         $("button#update-btn").addClass("d-none");
-            //         $('div#select-menu').addClass('d-none');
-            //     }
-
-            //     const url = isUpdate ? '/Category/Update' : '/Category/Create';
-
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: url,
-            //         data: {
-            //             Id: id,
-            //             Name: name,
-            //             Description: description,
-            //             Delete: deleteVal
-            //         },
-            //         success: function (response) {
-            //             alert("Success!");
-            //             if (isUpdate){
-            //                 showToastNotifications("Update Category",response);
-            //             } else {
-            //                 showToastNotifications("Add Category",response);
-            //             }
-
-            //             console.log(response);
-            //             $('#catTableBody').empty(); Clear Table
-            //         },
-            //         error: function (xhr, status, error) {
-            //             alert("Error occurred: " + xhr.responseText);
-            //             showToastNotifications("Category",xhr.responseText);
-            //         }
-            //     });
-            //     $('#edit-id').val(0);
-            //     $('input[name="Name"]').val(String.empty);
-            //     $('input[name="Description"]').val(String.empty);
-            // }
-        });
-
-        // Click for edit
-        $('#catTableBody').on("click", ".edit-btn", function (e) {
-            e.preventDefault();
-            $("h5#title").text("Update Category");
-
-            // Update Mode
-            $("button#add-btn").addClass("d-none");
-            $("button#update-btn").removeClass("d-none");
-
-            const row = $(this).closest('tr');
-            const id = row.find('th:eq(0)').text().trim();
-            const name = row.find('td:eq(0)').text().trim();
-            const desc = row.find('td:eq(1)').text().trim();
-            const del = row.find('td:eq(6) p').data('id');
-
-            $('input#edit-id').val(id);
-            $('input[name="Name"]').val(name);
-            $('input[name="Description"]').val(desc);
-            $('select[name=Delete]').val(del);
-            $('div#select-menu').removeClass('d-none');
-        });
-
-        // Show confirm delete modal
-        $(document).on('click', '.delete-btn', function (e) {
-            e.preventDefault();
-
-            const row = $(this).closest('tr');
-            const id = row.find('td:eq(0)').text().trim();
-            const name = row.find('td:eq(1)').text().trim();
-
-            $('#confirm-delete-btn').data('id', id);
-
-            $('#del-id').text(id);
-            $('#del-name').text(name);
-
-            delModal.show();
-        });
-
-        // Confirm Delete
-        $('#confirm-delete-btn').on("click", function () {
-            const id = $(this).data('id');
-            console.log(id);
-
-            $.ajax({
-                type:'GET',
-                url : '/Category/Delete',
-                data: {Id : id},
-                success: function (response) {
-                    showToastNotifications("Delete Category", response);
-                    delModal.hide();
-                    $('#catTableBody').empty(); // Clear Table
-                },
-                error: function (xhr) {
-                    showToastNotifications("Delete Error", xhr.responseText);
-                }
-            })
         });
 
         // Search
@@ -368,6 +251,140 @@
             {
                $('#catTableBody').empty(); // Clear Table
             }
+        });
+
+        // Show Add Modal
+        $('#showAdd-btn').on('click', function (e) {
+            addModal.show();
+        });
+
+        // Add
+        $('#addCategoryForm').on('submit', function (e) {
+            e.preventDefault();
+            const name = $('input[name="add-Name"]').val();
+            const description = $('input[name="add-Description"]').val();
+
+            console.log(id, name, description, deleteVal);  
+
+            if (name == "")
+            {
+                showToastNotifications("Add Category", "Please enter name");
+            }
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Category/Create',
+                    data: {
+                        Name: name,
+                        Description: description,
+                    },
+                    success: function (response) {
+                        showToastNotifications("Add Category",response);
+                        $('#catTableBody').empty(); // Clear Table
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error occurred: " + xhr.responseText);
+                        showToastNotifications("Category",xhr.responseText);
+                    }
+                });
+                $('#edit-id').val(0);
+                $('input[name="add-Name"]').val(String.empty);
+                $('input[name="add-Description"]').val(String.empty);
+                addModal.hide();
+            }
+        });
+
+        // Show Update Modal
+        $('#catTableBody').on("click", ".edit-btn", function (e) {
+            e.preventDefault();
+            updateModal.show();
+
+            const row = $(this).closest('tr');
+            const id = row.find('th:eq(0)').text().trim();
+            const name = row.find('td:eq(0)').text().trim();
+            const desc = row.find('td:eq(1)').text().trim();
+            const del = row.find('td:eq(6) p').data('id');
+
+            $('input#edit-id').val(id);
+            $('input[name="update-Name"]').val(name);
+            $('input[name="update-Description"]').val(desc);
+            $('select[name=Delete]').val(del);
+        });
+
+        // Update
+        $('#updateCategoryForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const id = $('#edit-id').val(); // hidden id
+            const name = $('input[name="update-Name"]').val();
+            const description = $('input[name="update-Description"]').val();
+            const deleteVal = $('select[name=Delete]').val();
+
+            if (name == "")
+            {
+                showToastNotifications("Update Category", "Please enter name");
+            }
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: '/Category/Update',
+                    data: {
+                        Id: id,
+                        Name: name,
+                        Description: description,
+                        Delete: deleteVal
+                    },
+                    success: function (response) {
+                        showToastNotifications("Update Category",response);
+                        $('#catTableBody').empty(); // Clear Table
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error occurred: " + xhr.responseText);
+                        showToastNotifications("Category",xhr.responseText);
+                    }
+                });
+                $('#edit-id').val(0);
+                $('input[name="update-Name"]').val(String.empty);
+                $('input[name="update-Description"]').val(String.empty);
+                $('select[name=Delete]').val("");
+                updateModal.hide();
+            }
+        });
+
+        // Show confirm delete modal
+        $(document).on('click', '.delete-btn', function (e) {
+            e.preventDefault();
+
+            const row = $(this).closest('tr');
+            const id = row.find('th:eq(0)').text().trim();
+            const name = row.find('td:eq(1)').text().trim();
+
+            $('#confirm-delete-btn').data('id', id);
+
+            $('#del-id').text(id);
+            $('#del-name').text(name);
+
+            delModal.show();
+        });
+
+        // Delete
+        $('#confirm-delete-btn').on("click", function () {
+            const id = $(this).data('id');
+
+            $.ajax({
+                type:'GET',
+                url : '/Category/Delete',
+                data: {Id : id},
+                success: function (response) {
+                    showToastNotifications("Delete Category", response);
+                    $('#catTableBody').empty(); // Clear Table
+                },
+                error: function (xhr) {
+                    showToastNotifications("Delete Error", xhr.responseText);
+                }
+                
+            })
+            delModal.hide();
         });
 
         function showToastNotifications(header, body)
