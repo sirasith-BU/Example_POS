@@ -384,7 +384,7 @@ namespace Example_POS.Controllers
                 mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder("");
-                strCommand.Append("SELECT TOP 1000 * FROM Categories WHERE Name LIKE @Name ");
+                strCommand.Append("SELECT TOP 100 * FROM Categories WHERE Name LIKE @Name ");
                 if (Delete != null)
                 {
                     strCommand.Append("AND isDelete = @Delete");

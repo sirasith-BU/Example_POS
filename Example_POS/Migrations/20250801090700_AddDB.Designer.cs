@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Example_POS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250730041037_AddTables")]
-    partial class AddTables
+    [Migration("20250801090700_AddDB")]
+    partial class AddDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
