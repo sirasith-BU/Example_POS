@@ -10,5 +10,7 @@ namespace Example_POS.DTOs.User
         public string? Email { get; set; }
         [Required(ErrorMessage = "Username is required.")]
         public string? Username { get; set; }
+
+        public string? JwtToken { get; set; }
     }
 }
