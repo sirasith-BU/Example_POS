@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /.vs
 *.user
 *.suo
@@ -7,3 +8,7 @@ bin/
 obj/
 /Example_POS/bin
 /Example_POS/obj
+=======
+/Example_POS/obj
+/.vs
+>>>>>>> Stashed changes
