@@ -2,7 +2,7 @@
 
 namespace Example_POS.DTOs.User
 {
-    public class RegisterModels
+    public class RegisterDTO
     {
         [Required(ErrorMessage = "Username is required.")]
         public string? Username { get; set; }

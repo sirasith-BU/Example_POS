@@ -36,7 +36,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach(var user in Model.Users)
+        @foreach(var user in Model.Users!)
         {
         <tr>
             <td>@user.Id</td>
@@ -45,7 +45,7 @@
             <td>
                 <span class="password-mask-container">
                     <span class="stars">********</span>
-                    <span class="real-password">@user.Password</span>
+                    <span class="real-password">@user.PasswordHash</span>
                 </span>
             </td>
                 <td><button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateUserModal" onclick="updateUser(@user.Id,'@user.Email', '@user.Username')">Edit</button></td>

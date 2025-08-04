@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Example_POS.DTOs.User
 {
-    public class LoginModels
+    public class LoginDTO
     {
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]

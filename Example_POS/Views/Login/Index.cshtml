@@ -1,55 +1,82 @@
 ﻿@using Example_POS.DTOs
 @using Example_POS.DTOs.User
 @using Example_POS.Models;
-@model LoginModels;
+@model LoginDTO;
 @{
     ViewData["Title"] = "Login";
     Layout = "Login_Layout";
     var nowDate = DateTime.UtcNow;
     Console.WriteLine(nowDate);
 }
-
     @if (!string.IsNullOrEmpty(ViewBag.Message))
     {
         <div id="autoDismissAlert" class="alert alert-@(ViewBag.Message.ToString().Contains("Success") ? "success" : "danger")" role="alert">
             @ViewBag.Message
         </div>
-
-        <script>
-
-        </script>
     }
-        <h1 class="text-center fw-bolder">ITEC POS Login</h1>
-        <form asp-controller="Login" asp-action="Index" method="POST">
-            <div class="mb-3">
-                <label class="form-label" asp-for="Email"></label>
-                @* <label for="email" class="form-label">Email</label> *@
-                <input type="email" id="email" class="form-control" placeholder="Enter email" asp-for="Email">
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" asp-for="Password"></label>
-                @* <label for="password" class="form-label">Password</label> *@
-                <input type="password" id="password" class="form-control" placeholder="Enter password" asp-for="Password">
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary">Sign in</button>
-            </div>
-            <div class="text-center">
-                <p>Already have account? <a asp-controller="Register" asp-action="Index">SignUp</a></p>
-            </div>
-        </form>
+    <h1 class="text-center fw-bolder">ITEC POS Login</h1>
+    @* <form id="LoginForm"> *@
+    <form asp-controller="Login" asp-action="Index" method="POST">
+        <div class="mb-3">
+            <label class="form-label" asp-for="Email"></label>
+            @* <label for="email" class="form-label">Email</label> *@
+            <input type="email" id="email" class="form-control" placeholder="Enter email" asp-for="Email">
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" asp-for="Password"></label>
+            @* <label for="password" class="form-label">Password</label> *@
+            <input type="password" id="password" class="form-control" placeholder="Enter password" asp-for="Password">
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="d-grid mb-3">
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+        <div class="text-center">
+            <p>Already have account? <a asp-controller="Register" asp-action="Index">SignUp</a></p>
+        </div>
+    </form>
 
 @section Scripts {
     <script>
         // AlertBox
         setTimeout(()=>{
-            const alertBox = document.getElementById("autoDismissAlert");
+            const alertBox = $("#autoDismissAlert");
             if (alertBox) {
                 alertBox.remove();
             }
         }, 2500);
+
+        // Login
+        // $('#LoginFormm').on('submit', function(e) {
+        //     e.preventDefault();
+
+        //     const email = $('input#email').val();
+        //     const password = $('input#password').val();
+
+        //     if (email == "")
+        //     {
+        //         alert("Please enter email")
+        //     }
+        //     else if (password == "")
+        //     {
+        //         alert("Please enter password")
+        //     }
+        //     else {
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: "/Login/SignIn",
+        //             data: { Email: email , Password: password},
+        //             success: (response) => {
+        //                 alert(response)
+        //         },
+        //         error: function (xhr, status, error) {
+        //             alert("Error occurred: " + xhr.responseText);
+        //         }
+        //         });
+        //     }
+        // }
+        // );
 
         const nowDate = new Date();
         console.log(nowDate);
