@@ -13,7 +13,7 @@ namespace Example_POS.Controllers
         private readonly IConfiguration _configuration;
         public CategoryController(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _configuration = configuration; 
         }
         public IActionResult Index()
         {
@@ -51,7 +51,7 @@ namespace Example_POS.Controllers
                 mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder("");
-                strCommand.Append("SELECT * FROM Categories");
+                strCommand.Append("SELECT TOP 1000 * FROM Categories");
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlDataAdapter = new SqlDataAdapter();
                 mySqlDataAdapter.SelectCommand = mySqlCommand;
@@ -141,7 +141,7 @@ namespace Example_POS.Controllers
                 mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder("");
-                strCommand.Append("SELECT Id, Name FROM Categories");
+                strCommand.Append("SELECT Id, Name FROM Categories WHERE IsDelete = 0");
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlDataAdapter = new SqlDataAdapter();
                 mySqlDataAdapter.SelectCommand = mySqlCommand;
@@ -212,10 +212,13 @@ namespace Example_POS.Controllers
                 mySqlDataReader = await sqlCheckDupName.ExecuteReaderAsync();
                 if (await mySqlDataReader.ReadAsync())
                 {
-                    await mySqlDataReader.CloseAsync();
                     return BadRequest("Already have this name!");
                 }
-                mySqlDataReader.Close();
+                if (mySqlDataReader != null)
+                {
+                    await mySqlDataReader.CloseAsync();
+                    mySqlDataReader = null;
+                }
 
                 // Create new category
                 sqlInsertCommand = mySqlConnection.CreateCommand();
@@ -275,17 +278,20 @@ namespace Example_POS.Controllers
                 mySqlDataReader = await myCheckDupNameSqlCommand.ExecuteReaderAsync();
                 if (await mySqlDataReader.ReadAsync())
                 {
-                    await mySqlDataReader.CloseAsync();
                     return BadRequest("Already have this name!");
                 }
-                mySqlDataReader.Close();
+                if (mySqlDataReader != null)
+                {
+                    await mySqlDataReader.CloseAsync();
+                    mySqlDataReader = null;
+                }
 
                 // Update category
                 myInsertSqlCommand = mySqlConnection.CreateCommand();
                 myInsertSqlCommand.CommandTimeout = 0;
                 updateCommand = new StringBuilder();
                 updateCommand.Append("UPDATE Categories ");
-                updateCommand.Append("SET Name = @Name, Description = @Description, UpdateBy = @UpdateBy, UpdateTime = @UpdateTime ");
+                updateCommand.Append("SET Name = @Name, Description = @Description, UpdateBy = @UpdateBy, UpdateTime = @UpdateTime, isDelete = @Delete ");
                 updateCommand.Append("WHERE Id = @Id");
                 myInsertSqlCommand.CommandText = updateCommand.ToString();
                 myInsertSqlCommand.Parameters.AddWithValue("@Name", updateCatData.Name);
@@ -293,6 +299,7 @@ namespace Example_POS.Controllers
                 myInsertSqlCommand.Parameters.AddWithValue("@UpdateBy", 0);
                 myInsertSqlCommand.Parameters.AddWithValue("@UpdateTime", DateTime.Now);
                 myInsertSqlCommand.Parameters.AddWithValue("@Id", updateCatData.Id);
+                myInsertSqlCommand.Parameters.AddWithValue("@Delete", updateCatData.Delete);
                 NumberOfRows = await myInsertSqlCommand.ExecuteNonQueryAsync();
 
                 //ViewBag.Message = "Update Category success!";
@@ -325,10 +332,12 @@ namespace Example_POS.Controllers
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder();
                 strCommand.Append("UPDATE Categories ");
-                strCommand.Append("SET IsDelete = 1 ");
+                strCommand.Append("SET IsDelete = 1, UpdateTime = @UpdateAt, UpdateBy = @UpdateBy ");
                 strCommand.Append("WHERE Id = @Id");
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlCommand.Parameters.AddWithValue("@Id", id);
+                mySqlCommand.Parameters.AddWithValue("@UpdateAt", DateTime.Now);
+                mySqlCommand.Parameters.AddWithValue("@UpdateBy", 0);
                 NumberOfRows = await mySqlCommand.ExecuteNonQueryAsync();
 
                 //ViewBag.Message = "Delete Category success!";
@@ -341,7 +350,7 @@ namespace Example_POS.Controllers
             }
         }
 
-        public async Task<IActionResult> Search(string keyword)
+        public async Task<IActionResult> Search(string keyword, string? Delete) 
         {
             string? strConnection = string.Empty;
             SqlConnection? mySqlConnection = null;
@@ -375,15 +384,28 @@ namespace Example_POS.Controllers
                 mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandTimeout = 0;
                 strCommand = new StringBuilder("");
-                strCommand.Append("SELECT TOP 3 * FROM Categories WHERE Name LIKE @Name");
+                strCommand.Append("SELECT TOP 100 * FROM Categories WHERE Name LIKE @Name ");
+                if (Delete != null)
+                {
+                    strCommand.Append("AND isDelete = @Delete");
+                }
+
+                //strCommand.Append("SELECT TOP 5 * FROM Categories WHERE Name ='");
+                //strCommand.Append(keyword);
+                //strCommand.Append("'");
+
                 mySqlCommand.CommandText = strCommand.ToString();
                 mySqlCommand.Parameters.AddWithValue("@Name", "%" + keyword + "%");
+                if (Delete != null)
+                {
+                    mySqlCommand.Parameters.AddWithValue("@Delete", Delete);
+                }
                 mySqlDataAdapter = new SqlDataAdapter();
                 mySqlDataAdapter.SelectCommand = mySqlCommand;
                 ListDataSet.Dispose();
                 ListDataSet = new DataSet();
                 NumberOfRows = mySqlDataAdapter.Fill(ListDataSet, "Result");
-                mySqlDataAdapter.Dispose();
+                mySqlDataAdapter.Dispose(); 
                 foreach (DataRow ListItem in ListDataSet.Tables["Result"]!.Rows)
                 {
                     ColumnName = "Id";
@@ -413,7 +435,7 @@ namespace Example_POS.Controllers
                     ColumnName = "UpdateTime";
                     UpdateAt = (DateTime)ListItem[ColumnName];
 
-                    ColumnName = "isDelete";
+                    ColumnName = "IsDelete";
                     IsDelete = Convert.ToInt32(ListItem[ColumnName]);
 
                     category = new()

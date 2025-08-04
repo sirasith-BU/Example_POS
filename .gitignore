@@ -1,3 +1,9 @@
-/Example_POS/obj
 /.vs
-/.vs/Example_POS
+*.user
+*.suo
+*.cache
+*.log
+bin/
+obj/
+/Example_POS/bin
+/Example_POS/obj

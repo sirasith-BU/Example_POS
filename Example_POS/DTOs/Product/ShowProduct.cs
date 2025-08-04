@@ -1,25 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
-    
-namespace Example_POS.Models
+
+namespace Example_POS.DTOs.Product
 {
-    public class Product
+    public class ShowProduct
     {
-        [Key]
         public int Id { get; set; }
-        [Required]
         public int CategoryId { get; set; }
-        [Required]
+        public string? CategoryName { get; set; }
         public string? Name { get; set; }
-        [Required]
         public int Quantity { get; set; }
-        [Required]
         public decimal Price { get; set; }
         public string? Description { get; set; }
         public int? CreateBy { get; set; }
-        [Required]
         public DateTime CreateTime { get; set; }
         public int? UpdateBy { get; set; }
-        [Required]
         public DateTime UpdateTime { get; set; }
         public int? IsDelete { get; set; }
     }
