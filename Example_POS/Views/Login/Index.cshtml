@@ -7,6 +7,7 @@
     Layout = "Login_Layout";
     var nowDate = DateTime.UtcNow;
     Console.WriteLine(nowDate);
+
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.Message))
@@ -20,7 +21,10 @@
     </script>
 }
 <h1 class="text-center fw-bolder">ITEC POS Login</h1>
-<form asp-controller="Login" asp-action="Login" method="POST">
+<form asp-controller="Login" asp-action="Index" method="POST">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <div class="mb-3">
         <label class="form-label" asp-for="Email"></label>
         @* <label for="email" class="form-label">Email</label> *@
@@ -56,4 +60,3 @@
     </script>
 }
 
-    

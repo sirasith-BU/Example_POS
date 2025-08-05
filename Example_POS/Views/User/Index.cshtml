@@ -24,6 +24,21 @@
 </style>
 
 <h1>Users</h1>
+
+<p>(Criteria Search)</p>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input type="text" id="search-username" class="form-control" placeholder="Search by username" />
+    </div>
+    <div class="col-md-4">
+        <input type="text" id="search-email" class="form-control" placeholder="Search by email" />
+    </div>
+    <div class="col-md-4">
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+    </div>
+</div>
+
 <table class="table" id="data-grid-user">
     <thead class="text-uppercase">
         <tr>
@@ -123,11 +138,13 @@
 @section Scripts {
     <script>
         function delUser(userId,userName){
+            $('#delUserModal').modal('show');
+
             document.getElementById('modalUserId').textContent = userId;
             document.getElementById('modalUsername').textContent = userName;
 
-             // Set hidden field value
-             document.getElementById('delUserId').value = userId;
+            // Set hidden field value
+            document.getElementById('delUserId').value = userId;
         }
 
         function updateUser(userId,email,userName){
@@ -146,15 +163,16 @@
         }
 
 
+        $(document).ready(function () {
 
-         $(document).ready(function () {
+            let userTable;
 
-                            // Toast Notification
-        if ("@msg" != "")
-        {
-            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
-            toastBootstrap.show()
-        }
+            // Toast Notification
+            if ("@msg" != "")
+            {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
+                toastBootstrap.show()
+            }
 
             var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
             if (showUpdate) {
@@ -165,12 +183,16 @@
                 $('#updateUserModal').modal('show');
             }
 
-            $('#data-grid-user').DataTable({
+            userTable = $('#data-grid-user').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: '/User/GetUser',
-                    type: 'POST'
+                    type: 'POST',
+                      data: function (d) {
+                        d.username = $('#search-username').val();
+                        d.email = $('#search-email').val();
+                    }
                 },
                 columns: [
                     { data: 'id' },
@@ -190,8 +212,18 @@
                     }
                 ]
             });
-        });
 
+            // Event Search
+            $('#searchBtn').click(function () {
+                userTable.ajax.reload();
+            });
+
+            $('#resetBtn').click(function () {
+                $('#search-username').val('');
+                $('#search-email').val('');
+                userTable.ajax.reload();
+            });
+        });
 
     </script>
 }

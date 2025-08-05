@@ -114,7 +114,7 @@ namespace Example_POS.Service.System
                                             new SqlParameter("@isActive", true),
                                             new SqlParameter("@isDelete", false)).FirstOrDefault();
 
-            if (user == null)
+            if (user == null || string.IsNullOrEmpty(user.Salt))
                 return null;
 
             var hashedInputPassword = HashPassword(password, user.Salt);

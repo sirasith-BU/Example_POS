@@ -35,7 +35,6 @@ namespace Example_POS.Controllers
 
         [HttpPost]
         public IActionResult GetUser()
-
         {
             // ดึงค่าจาก DataTables Request
             var draw = Request.Form["draw"].FirstOrDefault();
@@ -51,6 +50,10 @@ namespace Example_POS.Controllers
             var sortColumnIndex = Request.Form["order[0][column]"].FirstOrDefault();
             var sortDirection = Request.Form["order[0][dir]"].FirstOrDefault(); // asc or desc
 
+            //Filter
+            var username = Request.Form["username"].FirstOrDefault()?.Trim();
+            var email = Request.Form["email"].FirstOrDefault()?.Trim();
+
             // Query
             var query = _db.Users.AsQueryable();
 
@@ -64,6 +67,18 @@ namespace Example_POS.Controllers
                     f.Email.StartsWith(searchValue)
                 );
             }
+
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                query = query.Where(u => u.Username.Contains(username));
+            }
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                query = query.Where(u => u.Email.Contains(email));
+            }
+
 
             int recordsTotal = query.Count();
 
@@ -164,6 +179,7 @@ namespace Example_POS.Controllers
                     Users = _db.Users,
                     UpdateForm = userUpdateData
                 };
+
                 ViewBag.ShowUpdateModal = true;
                 ViewBag.ModalUserId = userUpdateData.Id;
                 return View("Index", model);
