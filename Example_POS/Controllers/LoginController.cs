@@ -4,6 +4,7 @@ using Example_POS.Helper;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -137,13 +138,13 @@ namespace Example_POS.Controllers
                 // Optional: Log the exception
                 // _logger.LogError(ex, "Login failed");
 
-                ModelState.AddModelError("", "An error occurred during login.");
+                ModelState.AddModelError("", ex.Message);
                 return View();
             }
         }
 
 
-        public User ValidateUser(string email, string password)
+        public User? ValidateUser(string email, string password)
         {
             string selectUserCommand = $"SELECT * FROM Users WHERE Email=@email and IsActive = @isActive and IsDelete = @isDelete";
             var user = _db.Users.FromSqlRaw(selectUserCommand,

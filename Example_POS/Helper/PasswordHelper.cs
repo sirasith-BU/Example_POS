@@ -8,9 +8,8 @@ namespace Example_POS.Helper
         // สร้าง Salt แบบสุ่ม (32 bytes)
         public static string GenerateSalt(int size = 32)
         {
-            var rng = new RNGCryptoServiceProvider();
             var saltBytes = new byte[size];
-            rng.GetBytes(saltBytes);
+            RandomNumberGenerator.Fill(saltBytes); 
             return Convert.ToBase64String(saltBytes);
         }
 

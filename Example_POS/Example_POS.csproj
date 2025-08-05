@@ -20,6 +20,10 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Service\Master\" />
+    <Folder Include="Service\Inventory\" />
+    <Folder Include="Service\Purchase\" />
+    <Folder Include="Service\Sales\" />
   </ItemGroup>
 
 </Project>

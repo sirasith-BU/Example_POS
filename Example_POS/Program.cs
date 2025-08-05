@@ -20,8 +20,13 @@ builder.Services.AddScoped<IJwtHelper, JwtHelper>();
 
 // Configure JWT Auth
 var config = builder.Configuration;
-var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+var jwtKey = config["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException("JWT key is missing in configuration.");
+}
 
+var key = Encoding.UTF8.GetBytes(jwtKey);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

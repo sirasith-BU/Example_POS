@@ -26,13 +26,13 @@ namespace Example_POS.Middleware
                 var _db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
                 // อ่าน access token จาก Header (หรือ Cookie แล้วแต่ config)
-                var accessToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                var accessToken = context.Request.Cookies["access_token"];
 
                 if (!string.IsNullOrEmpty(accessToken))
                 {
                     var principal = _jwtHelper.ValidateToken(accessToken);
 
-                    if (principal == null)
+                    if (principal != null)
                     {
                         // token หมดอายุ หรือไม่ถูกต้อง
                         // ลอง refresh ด้วย refresh token
@@ -41,9 +41,9 @@ namespace Example_POS.Middleware
                         if (!string.IsNullOrEmpty(refreshToken))
                         {
                             const string getUserByrefreshTokenCommand = @"
-                                                                    SELECT Id, RefreshTokenExpiryTime from Users 
+                                                                    SELECT * from Users 
                                                                     WHERE RefreshToken = @refreshToken and
-                                                                          RefreshTokenExpiryTime > @refreshTokenExpiryTime
+                                                                          RefreshTokenExpiryTime > @refreshTokenExpiryTime and
                                                                           IsDelete = @isDelete and
                                                                           IsActive = @isActive";
 
@@ -51,7 +51,7 @@ namespace Example_POS.Middleware
                             User? user = _db.Users.FromSqlRaw(getUserByrefreshTokenCommand,
                                                               new SqlParameter("@refreshToken", refreshToken),
                                                               new SqlParameter("@refreshTokenExpiryTime", DateTime.Now),
-                                                              new SqlParameter("@isDelete", false),
+                                                              new SqlParameter("@IsDelete", false),
                                                               new SqlParameter("@isActive", true)).FirstOrDefault();
 
                             if (user != null)
