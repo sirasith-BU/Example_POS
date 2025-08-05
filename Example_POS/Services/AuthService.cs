@@ -26,103 +26,141 @@ namespace Example_POS.Services
             _configuration = configuration;
         }
 
-        public async Task<TokenResponseDTO?> LoginAsync(LoginDTO request)
+        public async Task<TokenResponseDTO?> LoginAsync(LoginDTO request, HttpContext httpContext)
         {
-            User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            // User not found
-            if (user == null)
+            try
             {
-                return null!;
-            }
-            // Wrong Password
-            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash!, request.Password!) == PasswordVerificationResult.Failed)
-            {
-                return null!;
-            }
+                User? user = await _db.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                // User not found
+                if (user == null)
+                {
+                    return null!;
+                }
+                // Wrong Password
+                if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash!, request.Password!) == PasswordVerificationResult.Failed)
+                {
+                    return null!;
+                }
 
-            string token = CreateAccessToken(user);
-            string refreshToken = await GenerateAndSaveRefreshToken(user);
+                string accessToken = CreateAccessToken(user);
+                string refreshToken = await GenerateAndSaveRefreshToken(user);
 
-            string sql = @"
+                // UPDATE Users
+                string sql = @"
                         UPDATE Users 
                         SET 
                             AccessToken = @AccessToken,
                             RefreshToken = @RefreshToken,
                             RefreshTokenExpiredDate = @RefreshTokenExpiredDate
                         WHERE Email = @Email";
-            _db.Database.ExecuteSqlRaw(sql,
-                new SqlParameter("@AccessToken", token),
-                new SqlParameter("@RefreshToken", refreshToken),
-                new SqlParameter("@RefreshTokenExpiredDate", user.RefreshTokenExpiredDate),
-                new SqlParameter("@Email", request.Email)
-            );
+                _db.Database.ExecuteSqlRaw(sql,
+                    new SqlParameter("@AccessToken", accessToken),
+                    new SqlParameter("@RefreshToken", refreshToken),
+                    new SqlParameter("@RefreshTokenExpiredDate", user.RefreshTokenExpiredDate),
+                    new SqlParameter("@Email", request.Email)
+                );
 
-            var tokenresponse = new TokenResponseDTO
+                // Set Cookies
+                httpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddMinutes(10)
+                });
+                httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                });
+
+                var resposeToken = new TokenResponseDTO
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiredDate = user.RefreshTokenExpiredDate
+                };
+
+                return resposeToken;
+            }
+            catch (Exception)
             {
-                AccessToken = token,
-                RefreshToken = refreshToken,
-                RefreshTokenExpiredDate = user.RefreshTokenExpiredDate
-            };
-
-            return tokenresponse;
+                return null;
+            }
         }
 
         public async Task<User?> RegisterAsync(RegisterDTO request)
         {
-            // Check username duplicate
-            if (await _db.Users.AnyAsync(u => u.Username == request.Username))
+            try
+            {
+                // Check username duplicate
+                if (await _db.Users.AnyAsync(u => u.Username == request.Username))
+                {
+                    return null;
+                }
+                // Check email duplicate
+                if (await _db.Users.AnyAsync(u => u.Email == request.Email))
+                {
+                    return null;
+                }
+
+                // Create New User
+                var newUser = new User();
+                var hasedPassword = new PasswordHasher<User>().
+                    HashPassword(newUser, request.Password!);
+                newUser.PasswordHash = hasedPassword;
+                newUser.Email = request.Email;
+                newUser.Username = request.Username;
+                // Tokens
+                string sql = "INSERT INTO Users (Username, Email, PasswordHash) VALUES (@username, @email, @password)";
+                _db.Database.ExecuteSqlRaw(sql,
+                    new SqlParameter("@username", request.Username),
+                    new SqlParameter("@email", request.Email),
+                    new SqlParameter("@password", hasedPassword)
+                );
+
+                return newUser;
+            }
+            catch(Exception)
             {
                 return null;
             }
-            // Check email duplicate
-            if (await _db.Users.AnyAsync(u => u.Email == request.Email))
-            {
-                return null;
-            }
-
-            // Create New User
-            var newUser = new User();
-            var hasedPassword = new PasswordHasher<User>().
-                HashPassword(newUser, request.Password!);
-            newUser.PasswordHash = hasedPassword;
-            newUser.Email = request.Email;
-            newUser.Username = request.Username;
-            // Tokens
-            string sql = "INSERT INTO Users (Username, Email, PasswordHash) VALUES (@username, @email, @password)";
-            _db.Database.ExecuteSqlRaw(sql,
-                new SqlParameter("@username", request.Username),
-                new SqlParameter("@email", request.Email),
-                new SqlParameter("@password", hasedPassword)
-            );
-
-            return newUser;
         }
 
         private string CreateAccessToken(User user)
         {
-            var claims = new List<Claim>
+            try
             {
-                new Claim(ClaimTypes.Name, user.Username!),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username!),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!)
-                );
+                var key = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!)
+                    );
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
-            var tokenDescriptor = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("AppSettings:Issuer"),
-                audience: _configuration.GetValue<string>("AppSettings:Audience"),
+                var tokenDescriptor = new JwtSecurityToken(
+                    issuer: _configuration.GetValue<string>("AppSettings:Issuer"),
+                    audience: _configuration.GetValue<string>("AppSettings:Audience"),
 
 
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(10),
-                signingCredentials: creds
-                );
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(10),
+                    signingCredentials: creds
+                    );
 
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+                return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            }
+            catch(Exception)
+            {
+                return null!;
+            }
         }
 
         private string GenerateRefreshToken()
@@ -135,11 +173,18 @@ namespace Example_POS.Services
 
         private async Task<string> GenerateAndSaveRefreshToken(User user)
         {
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiredDate = DateTime.UtcNow.AddDays(7);
-            await _db.SaveChangesAsync();
-            return refreshToken;
+            try
+            {
+                var refreshToken = GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiredDate = DateTime.UtcNow.AddDays(7);
+                await _db.SaveChangesAsync();
+                return refreshToken;
+            }
+            catch (Exception)
+            {
+                return null!;
+            }
         }
 
         public ClaimsPrincipal? ValidateAccessToken(string token)

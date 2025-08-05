@@ -8,7 +8,7 @@ namespace Example_POS.Services.Interfaces
     public interface IAuthService
     {
         Task<User?> RegisterAsync(RegisterDTO request);
-        Task<TokenResponseDTO?> LoginAsync(LoginDTO request);
+        Task<TokenResponseDTO?> LoginAsync(LoginDTO request, HttpContext httpContext);
         ClaimsPrincipal? ValidateAccessToken(string token);
         Task<TokenResponseDTO?> ValidateRefreshToken(string refreshtoken);
     }

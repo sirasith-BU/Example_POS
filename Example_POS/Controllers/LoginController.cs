@@ -28,28 +28,13 @@ namespace Example_POS.Controllers
                 return View(request);
             }
 
-            TokenResponseDTO? token = await _authService.LoginAsync(request);
+            TokenResponseDTO? token = await _authService.LoginAsync(request, HttpContext);
             if (token is null)
             {
                 ViewBag.Message = "Invalid. Please try again";
                 return View();
             }
-            HttpContext.Response.Cookies.Append("accessToken", token.AccessToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(10)
-            });
-            HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
 
-            //TempData["Message"] = token;
             return RedirectToAction("Index", "Home");
         }
 

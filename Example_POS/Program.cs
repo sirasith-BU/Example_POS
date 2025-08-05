@@ -29,10 +29,39 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["AppSettings:Issuer"],
             ValidAudience = builder.Configuration["AppSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Appsettings:Token"]!
-                )),
+                Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)
+            )
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            // Check Cookies ᷹ Headers
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Cookies["accessToken"];
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception is SecurityTokenExpiredException)
+                {
+                    context.Response.StatusCode = 302;
+                    context.Response.Headers.Location = "/Login";
+                    return Task.CompletedTask;
+                }
+
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            }
+
         };
     });
+
 
 var app = builder.Build();
 
@@ -47,7 +76,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseMiddleware<TokenValidationMiddleware>();
+//app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthorization();
 
@@ -55,8 +84,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Login}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

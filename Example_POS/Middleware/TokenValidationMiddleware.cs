@@ -13,42 +13,41 @@ namespace Example_POS.Middleware
 
         public async Task Invoke(HttpContext context, IAuthService authService)
         {
-            var accessToken = context.Request.Cookies["accessToken"];
-            if (!string.IsNullOrEmpty(accessToken))
+            if (context.User.Identity!.IsAuthenticated)
             {
-                
-                var principal = authService.ValidateAccessToken(accessToken);
+                var refreshToken = context.Request.Cookies["refreshToken"];
 
-                if (principal != null)
+                if (!string.IsNullOrEmpty(refreshToken))
                 {
-                    context.User = principal;
-                    await _next(context);
-                    return;
+                    var token = await authService.ValidateRefreshToken(refreshToken);
+
+                    if (token != null)
+                    {
+                        context.Response.Cookies.Append("accessToken", token.AccessToken, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTime.UtcNow.AddMinutes(10)
+                        });
+
+                        context.User = authService.ValidateAccessToken(token.AccessToken)!;
+
+                        await _next(context);
+                        return;
+                    }
                 }
+                context.Response.Cookies.Delete("accessToken");
+                context.Response.Cookies.Delete("refreshToken");
+
+                //context.Response.Redirect("/Login");
+                await _next(context);
+                return; 
             }
 
-            // Try refresh token
-            var refreshToken = context.Request.Cookies["refreshToken"];
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                var token = await authService.ValidateRefreshToken(refreshToken);
-
-                //if (result != null)
-                //{
-                //    // Save new token in cookie
-                //    context.Response.Cookies.Append("accessToken", result.AccessToken, new CookieOptions
-                //    {
-                //        HttpOnly = true,
-                //        Secure = true,
-                //        SameSite = SameSiteMode.Strict,
-                //        Expires = DateTime.UtcNow.AddMinutes(15)
-                //    });
-
-                //    context.User = result.Principal;
-                //}
-            }
-
+            //context.Response.Redirect("/Login");
             await _next(context);
+            return;
         }
     }
 }
