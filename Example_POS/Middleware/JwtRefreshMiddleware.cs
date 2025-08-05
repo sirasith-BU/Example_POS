@@ -94,7 +94,12 @@ namespace Example_POS.Middleware
                                 });
 
                                 // update principal ใน HttpContext.User
-                                context.User = _jwtHelper.ValidateToken(newAccessToken);
+                                var principalUser = _jwtHelper.ValidateToken(newAccessToken);
+
+                                if(principalUser != null)
+                                {
+                                    context.User = principalUser;
+                                }
                             }
                             else
                             {

@@ -30,7 +30,6 @@
             <th>Id</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Password</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
@@ -132,6 +131,8 @@
         }
 
         function updateUser(userId,email,userName){
+            $('#updateUserModal').modal('show');
+
             document.getElementById('modalUserId_').textContent = userId;
             document.getElementById('updateEmailForm').value = email;
             document.getElementById('updateUsernameForm').value = userName;
@@ -144,16 +145,18 @@
             document.getElementById('updateUsername').value = userName;
         }
 
-        // Toast Notification
+
+
+         $(document).ready(function () {
+
+                            // Toast Notification
         if ("@msg" != "")
         {
             const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
             toastBootstrap.show()
         }
 
-                $(document).ready(function () {
-
-                      var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
+            var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
             if (showUpdate) {
                 var userId = '@ViewBag.ModalUserId';
                 document.getElementById('modalUserId_').textContent = userId;
@@ -173,7 +176,6 @@
                     { data: 'id' },
                     { data: 'username' },
                     { data: 'email' },
-                    { data: 'password' },
                     {
                         data: 'id',
                         render: function (data, type, row) {

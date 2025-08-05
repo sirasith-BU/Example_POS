@@ -17,10 +17,16 @@ namespace Example_POS.Extensions
 
             var method = typeof(Queryable).GetMethods()
                 .Where(m => m.Name == methodName && m.GetParameters().Length == 2)
-                .Single()
-                .MakeGenericMethod(typeof(T), property.Type);
+                .SingleOrDefault();
 
-            return (IQueryable<T>)method.Invoke(null, new object[] { source, keySelector });
+            if (method == null)
+            {
+                throw new InvalidOperationException($"Cannot find method '{methodName}' on IQueryable.");
+            }
+
+            method = method.MakeGenericMethod(typeof(T), property.Type);
+
+            return (IQueryable<T>)method.Invoke(null, new object[] { source, keySelector })!;
         }
     }
 }

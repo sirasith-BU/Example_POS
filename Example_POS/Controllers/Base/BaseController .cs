@@ -7,7 +7,7 @@ namespace Example_POS.Controllers.Base
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!User.Identity.IsAuthenticated)
+            if (User.Identity != null && !User.Identity.IsAuthenticated)
             {
                 context.Result = RedirectToAction("Login", "Index");
             }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Example_POS.Controllers
 {
-    public class UserController: Controller
+    public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
         public UserController(ApplicationDbContext db)
@@ -35,6 +35,7 @@ namespace Example_POS.Controllers
 
         [HttpPost]
         public IActionResult GetUser()
+
         {
             // ดึงค่าจาก DataTables Request
             var draw = Request.Form["draw"].FirstOrDefault();
@@ -78,7 +79,6 @@ namespace Example_POS.Controllers
                     0 => nameof(Example_POS.Models.User.Id),
                     1 => nameof(Example_POS.Models.User.Username),
                     2 => nameof(Example_POS.Models.User.Email),
-                    3 => nameof(Example_POS.Models.User.Password),
                     _ => nameof(Example_POS.Models.User.Id)
                 };
 
@@ -166,7 +166,7 @@ namespace Example_POS.Controllers
                 };
                 ViewBag.ShowUpdateModal = true;
                 ViewBag.ModalUserId = userUpdateData.Id;
-                return View("Index", model);         
+                return View("Index", model);
             }
 
             string updateUserByIdSQL = "UPDATE Users SET Email=@email, Username=@username WHERE Id=@userId";
