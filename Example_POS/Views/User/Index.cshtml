@@ -24,35 +24,31 @@
 </style>
 
 <h1>Users</h1>
-<table class="table">
+
+<p>(Criteria Search)</p>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input type="text" id="search-username" class="form-control" placeholder="Search by username" />
+    </div>
+    <div class="col-md-4">
+        <input type="text" id="search-email" class="form-control" placeholder="Search by email" />
+    </div>
+    <div class="col-md-4">
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+    </div>
+</div>
+
+<table class="table" id="data-grid-user">
     <thead class="text-uppercase">
         <tr>
             <th>Id</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Password</th>
             <th>Edit</th>
             <th>Delete</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach(var user in Model.Users)
-        {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.Username</td>
-            <td>@user.Email</td>
-            <td>
-                <span class="password-mask-container">
-                    <span class="stars">********</span>
-                    <span class="real-password">@user.Password</span>
-                </span>
-            </td>
-                <td><button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateUserModal" onclick="updateUser(@user.Id,'@user.Email', '@user.Username')">Edit</button></td>
-            <td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delUserModal" onclick="delUser(@user.Id, '@user.Username')">Delete</button></td>
-        </tr>
-        }
-    </tbody>
 </table>
 <!-- Delete User Modal -->
 <div class="modal fade" id="delUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -142,14 +138,18 @@
 @section Scripts {
     <script>
         function delUser(userId,userName){
+            $('#delUserModal').modal('show');
+
             document.getElementById('modalUserId').textContent = userId;
             document.getElementById('modalUsername').textContent = userName;
 
-             // Set hidden field value
-             document.getElementById('delUserId').value = userId;
+            // Set hidden field value
+            document.getElementById('delUserId').value = userId;
         }
 
         function updateUser(userId,email,userName){
+            $('#updateUserModal').modal('show');
+
             document.getElementById('modalUserId_').textContent = userId;
             document.getElementById('updateEmailForm').value = email;
             document.getElementById('updateUsernameForm').value = userName;
@@ -161,15 +161,19 @@
             document.getElementById('updateEmail').value = email;
             document.getElementById('updateUsername').value = userName;
         }
-        
-        // Toast Notification
-        if ("@msg" != "")
-        {
-            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
-            toastBootstrap.show()
-        }
+
 
         $(document).ready(function () {
+
+            let userTable;
+
+            // Toast Notification
+            if ("@msg" != "")
+            {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(document.getElementById('liveToast'))
+                toastBootstrap.show()
+            }
+
             var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
             if (showUpdate) {
                 var userId = '@ViewBag.ModalUserId';
@@ -178,6 +182,48 @@
                 document.getElementById('updateId').value = userId;
                 $('#updateUserModal').modal('show');
             }
+
+            userTable = $('#data-grid-user').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/User/GetUser',
+                    type: 'POST',
+                      data: function (d) {
+                        d.username = $('#search-username').val();
+                        d.email = $('#search-email').val();
+                    }
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'username' },
+                    { data: 'email' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-warning" onclick="updateUser(${data}, '${row.email}', '${row.username}')">Edit</button>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-danger" onclick="delUser(${data}, '${row.username}')">Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Event Search
+            $('#searchBtn').click(function () {
+                userTable.ajax.reload();
+            });
+
+            $('#resetBtn').click(function () {
+                $('#search-username').val('');
+                $('#search-email').val('');
+                userTable.ajax.reload();
+            });
         });
+
     </script>
 }

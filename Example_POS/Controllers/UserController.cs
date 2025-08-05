@@ -1,5 +1,6 @@
 ﻿using Example_POS.Data;
 using Example_POS.DTOs.User;
+using Example_POS.Extensions;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Example_POS.Controllers
 {
-    public class UserController: Controller
+    public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
         public UserController(ApplicationDbContext db)
@@ -31,6 +32,100 @@ namespace Example_POS.Controllers
             ViewBag.Message = TempData["Message"];
             return View(model);
         }
+
+        [HttpPost]
+        public IActionResult GetUser()
+        {
+            // ดึงค่าจาก DataTables Request
+            var draw = Request.Form["draw"].FirstOrDefault();
+            var start = Request.Form["start"].FirstOrDefault();
+            var length = Request.Form["length"].FirstOrDefault();
+            var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int drawInt = draw != null ? Convert.ToInt32(draw) : 0;
+
+            // ดึงค่าการเรียงลำดับ
+            var sortColumnIndex = Request.Form["order[0][column]"].FirstOrDefault();
+            var sortDirection = Request.Form["order[0][dir]"].FirstOrDefault(); // asc or desc
+
+            //Filter
+            var username = Request.Form["username"].FirstOrDefault()?.Trim();
+            var email = Request.Form["email"].FirstOrDefault()?.Trim();
+
+            // Query
+            var query = _db.Users.AsQueryable();
+
+            // Filter (Search)
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                searchValue = searchValue.Trim();
+
+                query = query.Where(f =>
+                    f.Username.StartsWith(searchValue) ||
+                    f.Email.StartsWith(searchValue)
+                );
+            }
+
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                query = query.Where(u => u.Username.Contains(username));
+            }
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                query = query.Where(u => u.Email.Contains(email));
+            }
+
+
+            int recordsTotal = query.Count();
+
+
+            // Apply Ordering
+            if (!string.IsNullOrEmpty(sortColumnIndex))
+            {
+                int columnIndex = Convert.ToInt32(sortColumnIndex);
+
+                // Map column index to property name
+                string columnName = columnIndex switch
+                {
+                    0 => nameof(Example_POS.Models.User.Id),
+                    1 => nameof(Example_POS.Models.User.Username),
+                    2 => nameof(Example_POS.Models.User.Email),
+                    _ => nameof(Example_POS.Models.User.Id)
+                };
+
+                if (sortDirection == "asc")
+                {
+                    query = query.OrderByDynamic(columnName, ascending: true);
+                }
+                else
+                {
+                    query = query.OrderByDynamic(columnName, ascending: false);
+                }
+            }
+            else
+            {
+                // Default order
+                query = query.OrderBy(u => u.Id);
+            }
+
+            // ดึงเฉพาะหน้าที่ต้องแสดง
+            var data = query.Skip(skip).Take(pageSize).ToList();
+
+            // ส่งกลับในรูปแบบที่ DataTables เข้าใจ
+            return Json(new
+            {
+                draw = drawInt,
+                recordsTotal = recordsTotal,
+                recordsFiltered = recordsTotal,
+                data = data
+            });
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -84,9 +179,10 @@ namespace Example_POS.Controllers
                     Users = _db.Users,
                     UpdateForm = userUpdateData
                 };
+
                 ViewBag.ShowUpdateModal = true;
                 ViewBag.ModalUserId = userUpdateData.Id;
-                return View("Index", model);         
+                return View("Index", model);
             }
 
             string updateUserByIdSQL = "UPDATE Users SET Email=@email, Username=@username WHERE Id=@userId";

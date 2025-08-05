@@ -1,6 +1,8 @@
-﻿using Example_POS.DTOs.Category;
+﻿using Example_POS.Controllers.Base;
+using Example_POS.DTOs.Category;
 using Example_POS.DTOs.Product;
 using Example_POS.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,8 @@ using System.Text;
 
 namespace Example_POS.Controllers
 {
-    public class ProductController : Controller
+    [Authorize]
+    public class ProductController : BaseController
     {
         private readonly IConfiguration _configuration;
         public ProductController(IConfiguration configuration)
