@@ -12,5 +12,8 @@ namespace Example_POS.Models
         public string? Email { get; set; }
         [Required]
         public string? PasswordHash { get; set; }
+        public string? AccessToken { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiredDate { get; set; }
     }
 }

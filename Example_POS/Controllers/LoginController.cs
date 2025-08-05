@@ -1,15 +1,8 @@
-﻿using Example_POS.Data;
+﻿using Example_POS.DTOs.Token;
 using Example_POS.DTOs.User;
-using Example_POS.Models;
 using Example_POS.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Example_POS.Controllers
 {
@@ -35,15 +28,36 @@ namespace Example_POS.Controllers
                 return View(request);
             }
 
-            var user = await _authService.LoginAsync(request);
-            if (user is null)
+            TokenResponseDTO? token = await _authService.LoginAsync(request);
+            if (token is null)
             {
                 ViewBag.Message = "Invalid. Please try again";
                 return View();
             }
+            HttpContext.Response.Cookies.Append("accessToken", token.AccessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(10)
+            });
+            HttpContext.Response.Cookies.Append("refreshToken", token.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
 
-            TempData["Message"] = user;
+            //TempData["Message"] = token;
             return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        [HttpGet("authorize")]
+        public IActionResult AuthenticatedEndpoints()
+        {
+            return Ok("Authenticated!");
         }
     }
 }

@@ -1,4 +1,5 @@
 using Example_POS.Data;
+using Example_POS.Middleware;
 using Example_POS.Services;
 using Example_POS.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -45,6 +46,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthorization();
 
