@@ -12,7 +12,7 @@ namespace Example_POS.Helper
     {
         public string GenerateJwtToken(string email, string userName);
         public string GenerateRefreshToken();
-        public ClaimsPrincipal ValidateToken(string token);
+        public ClaimsPrincipal? ValidateToken(string token);
     }
 
 
@@ -34,11 +34,26 @@ namespace Example_POS.Helper
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var jwtKey = _config["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new Exception("JWT Ket is Empty");
+            }
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var tokenLifetimeMinutes = _config["Jwt:TokenLifetimeMinutes"];
+
+            if (string.IsNullOrEmpty(tokenLifetimeMinutes))
+            {
+                throw new Exception("Token Lifetime Minutes is Empty");
+            }
+
             var expires = DateTime.UtcNow.AddMinutes(
-                double.Parse(_config["Jwt:TokenLifetimeMinutes"]));
+                double.Parse(tokenLifetimeMinutes));
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
@@ -57,10 +72,18 @@ namespace Example_POS.Helper
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
 
-        public ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal? ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+
+            var jwtKey = _config["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new Exception("JWT Ket is Empty");
+            }
+
+            var key = Encoding.UTF8.GetBytes(jwtKey);
 
             var validationParameters = new TokenValidationParameters
             {

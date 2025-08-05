@@ -1,6 +1,7 @@
 using Example_POS.Data;
 using Example_POS.Helper;
 using Example_POS.Middleware;
+using Example_POS.Service.System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseSqlServ
 
 
 //Service
-builder.Services.AddScoped<IJwtHelper, JwtHelper>();
+builder.Services.AddSingleton<IJwtHelper, JwtHelper>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 // Configure JWT Auth
 var config = builder.Configuration;

@@ -24,7 +24,7 @@
 </style>
 
 <h1>Users</h1>
-<table class="table">
+<table class="table" id="data-grid-user">
     <thead class="text-uppercase">
         <tr>
             <th>Id</th>
@@ -35,24 +35,6 @@
             <th>Delete</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach(var user in Model.Users)
-        {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.Username</td>
-            <td>@user.Email</td>
-            <td>
-                <span class="password-mask-container">
-                    <span class="stars">********</span>
-                    <span class="real-password">@user.Password</span>
-                </span>
-            </td>
-                <td><button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateUserModal" onclick="updateUser(@user.Id,'@user.Email', '@user.Username')">Edit</button></td>
-            <td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delUserModal" onclick="delUser(@user.Id, '@user.Username')">Delete</button></td>
-        </tr>
-        }
-    </tbody>
 </table>
 <!-- Delete User Modal -->
 <div class="modal fade" id="delUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -161,7 +143,7 @@
             document.getElementById('updateEmail').value = email;
             document.getElementById('updateUsername').value = userName;
         }
-        
+
         // Toast Notification
         if ("@msg" != "")
         {
@@ -169,8 +151,9 @@
             toastBootstrap.show()
         }
 
-        $(document).ready(function () {
-            var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
+                $(document).ready(function () {
+
+                      var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
             if (showUpdate) {
                 var userId = '@ViewBag.ModalUserId';
                 document.getElementById('modalUserId_').textContent = userId;
@@ -178,6 +161,35 @@
                 document.getElementById('updateId').value = userId;
                 $('#updateUserModal').modal('show');
             }
+
+            $('#data-grid-user').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/User/GetUser',
+                    type: 'POST'
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'username' },
+                    { data: 'email' },
+                    { data: 'password' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-warning" onclick="updateUser(${data}, '${row.email}', '${row.username}')">Edit</button>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-danger" onclick="delUser(${data}, '${row.username}')">Delete</button>`;
+                        }
+                    }
+                ]
+            });
         });
+
+
     </script>
 }

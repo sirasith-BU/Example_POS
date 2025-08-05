@@ -2,6 +2,7 @@
 using Example_POS.DTOs.User;
 using Example_POS.Helper;
 using Example_POS.Models;
+using Example_POS.Service.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -15,12 +16,12 @@ namespace Example_POS.Controllers
     public class LoginController : Controller
     {
         private readonly ApplicationDbContext _db;
-        private readonly IJwtHelper _jwtHelper;
+        private readonly IAuthService _authService;
 
-        public LoginController(ApplicationDbContext db, IJwtHelper jwtHelper)
+        public LoginController(ApplicationDbContext db, IAuthService authService)
         {
             _db = db;
-            _jwtHelper = jwtHelper;
+            _authService = authService;
         }
         public IActionResult Index()
         {
@@ -69,109 +70,44 @@ namespace Example_POS.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginModels loginData)
+        public async Task<IActionResult> Login(LoginModels loginData)
         {
-
             if (!ModelState.IsValid || string.IsNullOrWhiteSpace(loginData.Email) || string.IsNullOrWhiteSpace(loginData.Password))
             {
                 ModelState.AddModelError("", "Email and Password are required.");
                 return View();
             }
 
-            try
+            var res = await _authService.Login(loginData);
+            // Set access token cookie
+            Response.Cookies.Append("access_token", res.AccessToken, new CookieOptions
             {
-                var user = ValidateUser(loginData.Email, loginData.Password);
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddMinutes(30)
+            });
 
-                if (user == null)
-                {
-                    ModelState.AddModelError("", "Invalid email or password.");
-                    return View();
-                }
-
-                var token = _jwtHelper.GenerateJwtToken(user.Email, user.Username);
-                var principal = _jwtHelper.ValidateToken(token);
-
-                if (principal == null)
-                {
-                    ModelState.AddModelError("", "Invalid token.");
-                    return View();
-                }
-
-                // Generate & store refresh token
-                var refreshToken = _jwtHelper.GenerateRefreshToken();
-                var refreshExpiry = DateTime.UtcNow.AddDays(7);
-
-                const string updateUserCommand = @"
-                                    UPDATE Users 
-                                    SET RefreshToken = @refreshToken, 
-                                        RefreshTokenExpiryTime = @refreshTokenExpiryTime 
-                                    WHERE Id = @userId";
-
-                _db.Database.ExecuteSqlRaw(updateUserCommand,
-                    new SqlParameter("@userId", user.Id),
-                    new SqlParameter("@refreshToken", refreshToken),
-                    new SqlParameter("@refreshTokenExpiryTime", refreshExpiry));
-
-                // Set access token cookie
-                Response.Cookies.Append("access_token", token, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.Now.AddMinutes(30)
-                });
-
-                Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = refreshExpiry
-                });
-
-
-                TempData["Message"] = "Login successful!";
-                return RedirectToAction("Index", "Home");
-            }
-            catch (Exception ex)
+            Response.Cookies.Append("refresh_token", res.RefreshToken, new CookieOptions
             {
-                // Optional: Log the exception
-                // _logger.LogError(ex, "Login failed");
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddDays(7)
+            });
 
-                ModelState.AddModelError("", ex.Message);
-                return View();
-            }
+
+            TempData["Message"] = "Login successful!";
+            return RedirectToAction("Index", "Home");
         }
 
-
-        public User? ValidateUser(string email, string password)
+        [HttpGet]
+        public IActionResult Logout()
         {
-            string selectUserCommand = $"SELECT * FROM Users WHERE Email=@email and IsActive = @isActive and IsDelete = @isDelete";
-            var user = _db.Users.FromSqlRaw(selectUserCommand,
-                                            new SqlParameter("@email", email),
-                                            new SqlParameter("@isActive", true),
-                                            new SqlParameter("@isDelete", false)).FirstOrDefault();
+            Response.Cookies.Delete("access_token");
+            Response.Cookies.Delete("refresh_token");
 
-            if (user == null)
-                return null;
-
-            //var hashedInputPassword = HashPassword(password, user.Salt);
-
-            //if (user.Password != hashedInputPassword)
-            //    return null;
-
-            return user;
-        }
-
-        private string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var saltedPassword = password + salt;
-                var bytes = Encoding.UTF8.GetBytes(saltedPassword);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
+            return RedirectToAction("Index", "Login");
         }
     }
 }
