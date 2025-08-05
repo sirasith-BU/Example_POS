@@ -35,7 +35,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         options.Events = new JwtBearerEvents
         {
-            // Check Cookies ᷹ Headers
             OnMessageReceived = context =>
             {
                 var accessToken = context.Request.Cookies["accessToken"];
@@ -46,16 +45,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 return Task.CompletedTask;
             },
-            OnAuthenticationFailed = context =>
+            OnChallenge = context =>
             {
-                if (context.Exception is SecurityTokenExpiredException)
+                if (!context.Response.HasStarted)
                 {
                     context.Response.StatusCode = 302;
-                    context.Response.Headers.Location = "/Login";
-                    return Task.CompletedTask;
+                    context.Response.Headers["Location"] = "/Login";
                 }
 
-                context.Response.StatusCode = 401;
+                context.HandleResponse();
                 return Task.CompletedTask;
             }
 

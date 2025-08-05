@@ -40,12 +40,10 @@ namespace Example_POS.Middleware
                 context.Response.Cookies.Delete("accessToken");
                 context.Response.Cookies.Delete("refreshToken");
 
-                //context.Response.Redirect("/Login");
                 await _next(context);
-                return; 
+                return;
             }
 
-            //context.Response.Redirect("/Login");
             await _next(context);
             return;
         }
