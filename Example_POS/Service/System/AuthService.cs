@@ -12,11 +12,10 @@ using System.Text;
 
 namespace Example_POS.Service.System
 {
-
     public interface IAuthService
     {
+        public Task Register(RegisterModels register);
         public Task<Token> Login(LoginModels loginData);
-        public Task Logout();
     }
 
 
@@ -80,11 +79,32 @@ namespace Example_POS.Service.System
             }
         }
 
-        public Task Logout()
+        public async Task Register(RegisterModels register)
         {
-            throw new NotImplementedException();
-        }
+            string checkExistsCommand = "SELECT * FROM Users WHERE Username = @username or Email = @email";
+            var user = await _db.Users
+                .FromSqlRaw(checkExistsCommand, 
+                new SqlParameter("@username", register.Username), 
+                new SqlParameter("@email", register.Email)).FirstOrDefaultAsync();
 
+            if (user != null)
+            {
+                throw new Exception("Username or Email already use.");
+            }
+
+            var salt = GenerateSalt();
+
+            register.Password = HashPassword(register.Password, salt);
+
+            string registerCommand = "INSERT INTO Users (Username, Email, Password,Salt) VALUES (@username, @email, @password, @salt)";
+            await _db.Database.ExecuteSqlRawAsync(registerCommand,
+                new SqlParameter("@username", register.Username),
+                new SqlParameter("@email", register.Email),
+                new SqlParameter("@password", register.Password),
+                new SqlParameter("@salt", salt));
+
+            await Task.CompletedTask;
+        }
 
         public User? ValidateUser(string email, string password)
         {
@@ -97,10 +117,10 @@ namespace Example_POS.Service.System
             if (user == null)
                 return null;
 
-            //var hashedInputPassword = HashPassword(password, user.Salt);
+            var hashedInputPassword = HashPassword(password, user.Salt);
 
-            //if (user.Password != hashedInputPassword)
-            //    return null;
+            if (user.Password != hashedInputPassword)
+                return null;
 
             return user;
         }
@@ -114,6 +134,12 @@ namespace Example_POS.Service.System
                 var hash = sha256.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);
             }
+        }
+
+        private string GenerateSalt(int size = 32)
+        {
+            var saltBytes = RandomNumberGenerator.GetBytes(size); 
+            return Convert.ToBase64String(saltBytes);
         }
     }
 }
