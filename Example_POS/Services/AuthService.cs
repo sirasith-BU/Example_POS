@@ -4,6 +4,7 @@ using Example_POS.DTOs.Token;
 using Example_POS.DTOs.User;
 using Example_POS.Models;
 using Example_POS.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,8 @@ namespace Example_POS.Services
                 }
 
                 string accessToken = CreateAccessToken(user);
-                string refreshToken = await GenerateAndSaveRefreshToken(user);
+                string refreshToken = GenerateRefreshToken();
+                DateTime refreshTokenExpiredDate = DateTime.UtcNow.AddDays(7);
 
                 // UPDATE Users
                 string sql = @"
@@ -56,31 +58,15 @@ namespace Example_POS.Services
                 _db.Database.ExecuteSqlRaw(sql,
                     new SqlParameter("@AccessToken", accessToken),
                     new SqlParameter("@RefreshToken", refreshToken),
-                    new SqlParameter("@RefreshTokenExpiredDate", user.RefreshTokenExpiredDate),
+                    new SqlParameter("@RefreshTokenExpiredDate", refreshTokenExpiredDate),
                     new SqlParameter("@Email", request.Email)
                 );
-
-                // Set Cookies
-                httpContext.Response.Cookies.Append("accessToken", accessToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddMinutes(10)
-                });
-                httpContext.Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddDays(7)
-                });
 
                 var resposeToken = new TokenResponseDTO
                 {
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
-                    RefreshTokenExpiredDate = user.RefreshTokenExpiredDate
+                    RefreshTokenExpiredDate = refreshTokenExpiredDate
                 };
 
                 return resposeToken;
@@ -171,21 +157,21 @@ namespace Example_POS.Services
             return Convert.ToBase64String(randomNumber);
         }
 
-        private async Task<string> GenerateAndSaveRefreshToken(User user)
-        {
-            try
-            {
-                var refreshToken = GenerateRefreshToken();
-                user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiredDate = DateTime.UtcNow.AddDays(7);
-                await _db.SaveChangesAsync();
-                return refreshToken;
-            }
-            catch (Exception)
-            {
-                return null!;
-            }
-        }
+        //private async Task<string> GenerateAndSaveRefreshToken(User user)
+        //{
+        //    try
+        //    {
+        //        var refreshToken = GenerateRefreshToken();
+        //        user.RefreshToken = refreshToken;
+        //        user.RefreshTokenExpiredDate = DateTime.UtcNow.AddDays(7);
+        //        await _db.SaveChangesAsync();
+        //        return refreshToken;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return null!;
+        //    }
+        //}
 
         public ClaimsPrincipal? ValidateAccessToken(string token)
         {
@@ -214,47 +200,35 @@ namespace Example_POS.Services
             }
         }
 
-        public async Task<TokenResponseDTO?> ValidateRefreshToken(string refreshToken)
+        public async Task<string?> ValidateRefreshToken(string refreshToken)
         {
-            try
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user is null)
             {
-                var user = await _db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
-                if (user == null || user.RefreshTokenExpiredDate < DateTime.UtcNow)
-                {
-                    return null;
-                }
-
+                return null;
+            }
+            if (user.RefreshTokenExpiredDate < DateTime.UtcNow)
+            {
+                return null;
+            }
+            else
+            {
                 string newAccessToken = CreateAccessToken(user);
-                string newRefreshToken = GenerateRefreshToken();
-
-                user.AccessToken = newAccessToken;
-                user.RefreshToken = newRefreshToken;
+                DateTime exp = DateTime.UtcNow.AddDays(7);
 
                 string sql = @"
-                        UPDATE Users 
-                        SET 
-                            AccessToken = @AccessToken,
-                            RefreshToken = @RefreshToken,
-                            RefreshTokenExpiredDate = @RefreshTokenExpiredDate
-                        WHERE Email = @Email";
+                    UPDATE Users 
+                    SET 
+                        AccessToken = @AccessToken,
+                        RefreshTokenExpiredDate = @RefreshTokenExpiredDate
+                    WHERE Email = @Email";
                 _db.Database.ExecuteSqlRaw(sql,
                     new SqlParameter("@AccessToken", newAccessToken),
-                    new SqlParameter("@RefreshToken", newRefreshToken),
-                    new SqlParameter("@RefreshTokenExpiredDate", DateTime.UtcNow.AddDays(7)),
+                    new SqlParameter("@RefreshTokenExpiredDate", exp),
                     new SqlParameter("@Email", user.Email)
                 );
 
-                var tokenresponse = new TokenResponseDTO
-                {
-                    AccessToken = newAccessToken,
-                    RefreshToken = refreshToken,
-                    RefreshTokenExpiredDate = DateTime.UtcNow.AddDays(7)
-                };
-                return tokenresponse;
-            }
-            catch
-            {
-                return null;
+                return newAccessToken;
             }
         }
     }

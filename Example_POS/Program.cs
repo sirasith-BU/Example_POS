@@ -27,7 +27,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+            ValidIssuer = builder.Configuration["AppSettings:Issuer"],  
             ValidAudience = builder.Configuration["AppSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)
@@ -39,11 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             OnMessageReceived = context =>
             {
                 var accessToken = context.Request.Cookies["accessToken"];
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    context.Token = accessToken;
-                }
-
+                context.Token = accessToken;
                 return Task.CompletedTask;
             },
             OnChallenge = context =>
@@ -74,7 +70,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseMiddleware<TokenValidationMiddleware>();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

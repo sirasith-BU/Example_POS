@@ -10,6 +10,6 @@ namespace Example_POS.Services.Interfaces
         Task<User?> RegisterAsync(RegisterDTO request);
         Task<TokenResponseDTO?> LoginAsync(LoginDTO request, HttpContext httpContext);
         ClaimsPrincipal? ValidateAccessToken(string token);
-        Task<TokenResponseDTO?> ValidateRefreshToken(string refreshtoken);
+        Task<string?> ValidateRefreshToken(string refreshtoken);
     }
 }

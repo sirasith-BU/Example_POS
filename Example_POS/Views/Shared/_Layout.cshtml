@@ -5,50 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Example_POS</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Example_POS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Example_POS.styles.css" asp-append-version="true" /> *@
+    <!--font-awesome-css-->
+    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <!-- tabler icons-->
+    <link rel="stylesheet" type="text/css" href="assets/vendor/tabler-icons/tabler-icons.css">
+
+    <!--flag Icon css-->
+    <link rel="stylesheet" type="text/css" href="assets/vendor/flag-icons-master/flag-icon.css">
+
+    <!-- Bootstrap css-->
+    <link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/bootstrap.min.css">
+
+    <!-- simplebar css-->
+    <link rel="stylesheet" type="text/css" href="assets/vendor/simplebar/simplebar.css">
+
+    <!-- App css-->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+
+    <!-- Responsive css-->
+    <link rel="stylesheet" type="text/css" href="assets/css/responsive.css">
+
+    <!-- Data Table css-->
+    <link rel="stylesheet" type="text/css" href="assets/vendor/datatable/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/vendor/datatable/datatable2/buttons.dataTables.min.css">
 </head>
-<body>  
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Example_POS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Index">Register</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
-                        </li>
-                    </ul>
+<body>
+    <header class="header-main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 d-flex align-items-center header-left">
+                                    @* <span class="header-toggle me-2">
+                                        <i class="ti ti-category"> </i>
+                                    </span>
+
+                                    <div class="header-searchbar">
+                                        ...
+                                    </div> *@
+                                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Example_POS</a>
+                                    @* <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                                            aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                    </button> *@
+                                </div>
+                                <div class="col-6 d-flex align-items-center justify-content-end header-right">
+                                    <ul class="d-flex align-items-center">
+                                        @* <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                        </li> *@
+                                        @* <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Index">Register</a>
+                                        </li> *@
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
     <div class="p-3">
         <main role="main">
             @RenderBody()
         </main>
     </div>
-
     @* <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2568 - Example_POS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -58,5 +104,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Data Table js-->
+    <script src="assets/vendor/datatable/jquery.dataTables.min.js"></script>
+    <script src="assets/vendor/datatable/datatable2/dataTables.buttons.min.js"></script>
+    <script src="assets/vendor/datatable/datatable2/jszip.min.js"></script>
+    <script src="assets/vendor/datatable/datatable2/pdfmake.min.js"></script>
+    <script src="assets/vendor/datatable/datatable2/vfs_fonts.js"></script>
+    <script src="assets/vendor/datatable/datatable2/buttons.html5.min.js"></script>
+    <script src="assets/vendor/datatable/datatable2/buttons.print.min.js"></script>
 </body>
 </html>

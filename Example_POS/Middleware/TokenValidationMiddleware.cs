@@ -1,4 +1,6 @@
 ﻿using Example_POS.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using NuGet.Common;
 
 namespace Example_POS.Middleware
 {
@@ -11,32 +13,51 @@ namespace Example_POS.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthService authService)
+        public async Task Invoke(HttpContext httpcontext, IAuthService authService)
         {
-            var refreshToken = context.Request.Cookies["refreshToken"];
-
-            if (!string.IsNullOrEmpty(refreshToken))
+            var accessToken = httpcontext.Request.Cookies["accessToken"];
+            if (!string.IsNullOrEmpty(accessToken))
             {
-                var token = await authService.ValidateRefreshToken(refreshToken);
-
-                if (token != null)
+                var principal = authService.ValidateAccessToken(accessToken);
+                if (principal != null)
                 {
-                    context.Response.Cookies.Append("accessToken", token.AccessToken, new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                        Expires = DateTime.UtcNow.AddMinutes(10)
-                    });
-
-                    context.User = authService.ValidateAccessToken(token.AccessToken)!;
-
-                    await _next(context);
+                    httpcontext.User = principal;
+                    await _next(httpcontext);
                     return;
                 }
             }
+            else
+            {
+                var refreshToken = httpcontext.Request.Cookies["refreshToken"];
+                if (!string.IsNullOrEmpty(refreshToken))
+                {
+                    var newAccessToken = await authService.ValidateRefreshToken(refreshToken);
 
-            await _next(context);
+                    if (newAccessToken != null)
+                    {
+                        // Set Cookies
+                        httpcontext.Response.Cookies.Append("accessToken", newAccessToken, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTime.UtcNow.AddMinutes(10)
+                        });
+
+                        var principal = authService.ValidateAccessToken(newAccessToken);
+                        if (principal != null)
+                        {
+                            httpcontext.User = principal;
+                        }
+
+                        await _next(httpcontext);
+                        return;
+                    }
+                }
+            }
+
+
+                await _next(httpcontext);
             return;
         }
     }
