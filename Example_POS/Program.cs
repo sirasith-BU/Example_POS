@@ -17,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseSqlServ
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Jwt
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -56,10 +57,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 context.HandleResponse();
                 return Task.CompletedTask;
             }
-
         };
     });
-
 
 var app = builder.Build();
 
@@ -74,7 +73,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-//app.UseMiddleware<TokenValidationMiddleware>();
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthorization();
 
@@ -82,7 +81,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}")
+    pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();
