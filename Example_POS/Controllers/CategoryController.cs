@@ -1,4 +1,5 @@
-﻿using Example_POS.DTOs;
+﻿using Example_POS.Data;
+using Example_POS.DTOs;
 using Example_POS.DTOs.Category;
 using Example_POS.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,11 @@ namespace Example_POS.Controllers
     public class CategoryController : Controller
     {
         private readonly IConfiguration _configuration;
-        public CategoryController(IConfiguration configuration)
+        private readonly ApplicationDbContext _db;
+        public CategoryController(IConfiguration configuration, ApplicationDbContext db)
         {
-            _configuration = configuration; 
+            _configuration = configuration;
+            _db = db;
         }
         public IActionResult Index()
         {
@@ -132,44 +135,12 @@ namespace Example_POS.Controllers
             List<CategoryOptions> CatOptions = [];
             try
             {
-                // Database Connection
-                strConnection = _configuration.GetConnectionString("DefaultConnection");
-                mySqlConnection = new SqlConnection(strConnection);
-                await mySqlConnection.OpenAsync();
-
-                // Get Id, Name
-                mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandTimeout = 0;
-                strCommand = new StringBuilder("");
-                strCommand.Append("SELECT Id, Name FROM Categories WHERE IsDelete = 0");
-                mySqlCommand.CommandText = strCommand.ToString();
-                mySqlDataAdapter = new SqlDataAdapter();
-                mySqlDataAdapter.SelectCommand = mySqlCommand;
-                ListDataSet.Dispose();
-                ListDataSet = new DataSet();
-                NumberOfRows = mySqlDataAdapter.Fill(ListDataSet, "Result");
-                mySqlDataAdapter.Dispose();
-                foreach (DataRow ListItem in ListDataSet.Tables["Result"]!.Rows)
+                CatOptions = _db.Categories.Select(s => new CategoryOptions()
                 {
-                    ColumnName = "Id";
-                    Id = Convert.ToInt32(ListItem[ColumnName]);
+                     Id = s.Id,
+                     Name  = s.Name
+                }).ToList();
 
-                    ColumnName = "Name";
-                    if (ListItem.IsNull(ColumnName))
-                        Name = "";
-                    else
-                        Name = Convert.ToString(ListItem[ColumnName])!;
-
-
-                    catagory = new()
-                    {
-                        Id = Id,
-                        Name = Name
-                    };
-                    CatOptions.Add(catagory);
-                }
-
-                //ViewBag.Category = CatList;
                 return Json(CatOptions);
             }
             catch (Exception e)

@@ -101,6 +101,187 @@ namespace Example_POS.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Example_POS.Models.PurPurchaseOrder", b =>
+                {
+                    b.Property<int>("PurchaseOrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseOrderId"));
+
+                    b.Property<int?>("CreateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IsDelete")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PurchaseOrderNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ToTalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ToTalPriceFc")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UpdateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PurchaseOrderId");
+
+                    b.ToTable("PurPurchaseOrder");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.PurPurchaseOrderItem", b =>
+                {
+                    b.Property<int>("PurchaseOrderItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseOrderItemId"));
+
+                    b.Property<int?>("CreateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IsDelete")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductName")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PurPurchaseOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Qty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UpdateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PurchaseOrderItemId");
+
+                    b.HasIndex("PurPurchaseOrderId");
+
+                    b.ToTable("PurPurchaseOrderItem");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.SysFlex", b =>
+                {
+                    b.Property<int>("FlexId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlexId"));
+
+                    b.Property<int?>("CreateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FlexCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FlexName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("IsDelete")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UpdateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("FlexId");
+
+                    b.HasIndex("FlexCode")
+                        .IsUnique();
+
+                    b.ToTable("SysFlex");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.SysFlexItem", b =>
+                {
+                    b.Property<int>("FlexItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FlexItemId"));
+
+                    b.Property<int?>("CreateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("FlexId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FlexItemCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FlexItemName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("IsDelete")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UpdateBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("FlexItemId");
+
+                    b.HasIndex("FlexId");
+
+                    b.ToTable("SysFlexItem");
+                });
+
             modelBuilder.Entity("Example_POS.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -154,6 +335,38 @@ namespace Example_POS.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.PurPurchaseOrderItem", b =>
+                {
+                    b.HasOne("Example_POS.Models.PurPurchaseOrder", "PurPurchaseOrder")
+                        .WithMany("PurPurchaseOrderItem")
+                        .HasForeignKey("PurPurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PurPurchaseOrder");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.SysFlexItem", b =>
+                {
+                    b.HasOne("Example_POS.Models.SysFlex", "SysFlex")
+                        .WithMany("SysFlexItem")
+                        .HasForeignKey("FlexId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SysFlex");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.PurPurchaseOrder", b =>
+                {
+                    b.Navigation("PurPurchaseOrderItem");
+                });
+
+            modelBuilder.Entity("Example_POS.Models.SysFlex", b =>
+                {
+                    b.Navigation("SysFlexItem");
                 });
 #pragma warning restore 612, 618
         }

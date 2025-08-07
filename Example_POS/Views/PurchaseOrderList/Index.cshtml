@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Purchase Order</h1>
+
+<p>(Criteria Search)</p>
+
+<button type="button" class="btn btn-primary my-5" id="showAdd-btn">Create</button>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <input type="text" id="search-username" class="form-control" placeholder="Search by username" />
+    </div>
+    <div class="col-md-4">
+        <input type="text" id="search-email" class="form-control" placeholder="Search by email" />
+    </div>
+    <div class="col-md-4">
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="resetBtn" class="btn btn-secondary">Reset</button>
+    </div>
+</div>
+
+<table class="table" id="data-grid-user">
+    <thead class="text-uppercase">
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+</table>
+<!-- Delete User Modal -->
+<div class="modal fade" id="delUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Delete</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user: <strong id="modalUsername"></strong> (ID: <span id="modalUserId"></span>) ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="delUserForm" method="post" asp-controller="User" asp-action="DelUser">
+                    <input type="hidden" name="userId" id="delUserId" />
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Update User Modal -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Update User (ID: <span id="modalUserId_"></span>)</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        @*     <form id="editUserForm" method="post" asp-controller="User" asp-action="EditUser">
+                <div class="modal-body">
+                    <input type="hidden" name="Id" id="updateId" />
+                    <div class="mb-0">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" type="text" name="Email" id="updateEmailForm" asp-for="UpdateForm.Email" />
+                        <input type="hidden" name="Email" id="updateEmail" />
+                        <span asp-validation-for="UpdateForm.Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control" type="text" name="Username" id="updateUsernameForm" asp-for="UpdateForm.Username" />
+                        <input type="hidden" name="Username" id="updateUsername" />
+                        <span asp-validation-for="UpdateForm.Username" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Yes, Update</button>
+                </div>
+            </form> *@
+        </div>
+    </div>
+</div>
+@* Toast Components*@
+
+
+@section Scripts {
+    <script>
+        function delUser(userId,userName){
+            $('#delUserModal').modal('show');
+
+            document.getElementById('modalUserId').textContent = userId;
+            document.getElementById('modalUsername').textContent = userName;
+
+            // Set hidden field value
+            document.getElementById('delUserId').value = userId;
+        }
+
+        function updateUser(userId,email,userName){
+            $('#updateUserModal').modal('show');
+
+            document.getElementById('modalUserId_').textContent = userId;
+            document.getElementById('updateEmailForm').value = email;
+            document.getElementById('updateUsernameForm').value = userName;
+
+            console.log("Update UserId:", userId)
+
+            // Set hidden field value
+            document.getElementById('updateId').value = userId;
+            document.getElementById('updateEmail').value = email;
+            document.getElementById('updateUsername').value = userName;
+        }
+
+
+        $(document).ready(function () {
+
+            let userTable;
+
+            // Toast Notification
+    
+
+            var showUpdate = '@ViewBag.ShowUpdateModal' === 'True';
+            if (showUpdate) {
+                var userId = '@ViewBag.ModalUserId';
+                document.getElementById('modalUserId_').textContent = userId;
+                // Set hidden field value
+                document.getElementById('updateId').value = userId;
+                $('#updateUserModal').modal('show');
+            }
+
+            userTable = $('#data-grid-user').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/User/GetUser',
+                    type: 'POST',
+                      data: function (d) {
+                        d.username = $('#search-username').val();
+                        d.email = $('#search-email').val();
+                    }
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'username' },
+
+                    { data: 'email' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-warning" onclick="updateUser(${data}, '${row.email}', '${row.username}')">Edit</button>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-danger" onclick="delUser(${data}, '${row.username}')">Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Event Search
+            $('#searchBtn').click(function () {
+                userTable.ajax.reload();
+            });
+
+            $('#resetBtn').click(function () {
+                $('#search-username').val('');
+                $('#search-email').val('');
+                userTable.ajax.reload();
+            });
+        });
+
+    </script>
+}

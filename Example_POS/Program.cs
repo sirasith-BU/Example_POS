@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 //DbContext Settings
-builder.Services.AddDbContext<ApplicationDbContext>(options=> options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 //Service
@@ -66,7 +66,7 @@ builder.Services.AddAuthentication(options =>
             if (!context.Response.HasStarted)
             {
                 context.Response.StatusCode = 302;
-                context.Response.Headers["Location"] = "/Login/Index"; 
+                context.Response.Headers["Location"] = "/Login/Index";
             }
 
             context.HandleResponse(); // ป้องกัน default 401 response
@@ -86,12 +86,19 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Request Path: " + context.Request.Path);
+
+    await next();
+});
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseMiddleware<JwtRefreshMiddleware>();
-app.UseAuthentication(); 
-app.UseAuthorization();  
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 

@@ -1,0 +1,5 @@
+﻿@model IEnumerable<SelectListItem>
+
+<select asp-for="@ViewData["SelectedStateName"]" asp-items="Model" class="form-select">
+    <option value="">-- กรุณาเลือก --</option>
+</select>

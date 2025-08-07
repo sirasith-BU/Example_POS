@@ -1,0 +1,14 @@
+﻿@model List<SysFlexItem>
+
+
+<div>This is View Component</div>
+
+<div class="row app-form">
+    <label class="form-label">Basic</label>
+    <select class="select-example form-select select-basic" name="state">
+        @foreach(var item in @Model)
+        {
+            <option value=@item.FlexItemCode>@item.FlexItemName</option>
+        }
+    </select>
+</div>

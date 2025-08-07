@@ -1,0 +1,533 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Breadcrumb start -->
+<div class="row m-1">
+    <div class="col-12 ">
+        <h4 class="main-title">Component</h4>
+        <ul class="app-line-breadcrumbs mb-3">
+            <li class="">
+                <a class="f-s-14 f-w-500" href="#">
+                    <span>
+                        <i class="ph-duotone  ph-briefcase-metal f-s-16"></i> Component
+                    </span>
+                </a>
+            </li>
+            <li class="active">
+                <a class="f-s-14 f-w-500" href="#">Test Component</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb end -->
+
+<div class="app-scroll table-responsive app-datatable-default">
+
+    <div class="list-table-header d-flex justify-content-sm-between mb-3">
+        <button class="btn btn-primary b-r-22" data-bs-target="#exampleModal" data-bs-toggle="modal" type="button">
+            Add
+        </button>
+    </div>
+
+    <table id="data-grid-user" class="w-100 display patients-list-table dataTable">
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="exampleModal" tabindex="-1">
+    <form id="add_employee_form">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        Add
+                        Employee
+                    </h1>
+                    <button aria-label="Close" class="btn-close m-0" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="employee mb-3">
+                        <input id="id-field" type="hidden">
+                        <label class="form-label">Employee :</label>
+                        <input class="form-control" id="employee-field" placeholder="employee" required="" type="text">
+                    </div>
+
+                    <div class="email mb-3">
+                        <label class="form-label">Email :</label>
+                        <input class="form-control" id="email-field" placeholder="email" required="" type="email">
+                    </div>
+
+                    <div class="contact mb-3">
+                        <label class="form-label">contact :</label>
+                        <input class="form-control" id="contact-field" placeholder="contact" required="" type="text">
+                    </div>
+
+                    <div class="date mb-3">
+                        <label class="form-label">date :</label>
+                        <input class="form-control" id="date-field" required="" type="date">
+                    </div>
+
+                    <div class="status mb-3">
+                        <label class="form-label">status :</label>
+                        <select aria-label="Default select example" class="form-select" id="status-field">
+                            <option value="">Status</option>
+                            <option value="success">Active</option>
+                            <option value="danger">Block</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer add">
+                    <input class="btn btn-secondary" data-bs-dismiss="modal" type="button" value="Close">
+                    <input class="btn btn-primary" id="add-btn" type="submit" value="Add">
+                    <button class="btn btn-success b-r-22" id="edit-btn" style="display: none;">
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+<button class="btn btn-light-primary btn-md" id="sweet-alert-1" type="button">
+    Sweetalert
+</button>
+
+
+<div class="card my-5">
+    <div class="card-header code-header">
+        <h5>Single Button and Link Dropdown</h5>
+    </div>
+    <div class="card-body d-flex flex-wrap gap-2">
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                Dropdown button
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item">Action</a></li>
+                <li><a class="dropdown-item">Another action</a></li>
+                <li><a class="dropdown-item">Something else here</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="m-0">Select2 With Color Tags</h5>
+        </div>
+        <div class="card-body">
+            <div class="row app-form">
+                <div class="col-xl-6">
+                    <div class="select_primary">
+                        <label class="form-label">Select Primary</label>
+                        <select class="select-basic-multiple-four w-100 select_primary"
+                                multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_secondary mt-xl-0 mt-4">
+                        <label class="form-label">Select Secondary</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_success mt-4 ">
+                        <label class="form-label">Select Success</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_danger mt-4">
+                        <label class="form-label">Select Danger</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_warning mt-4">
+                        <label class="form-label">Select Warning</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_info mt-4">
+                        <label class="form-label">Select Info</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="select_dark mt-4">
+                        <label class="form-label">Select Dark</label>
+                        <select class="select-basic-multiple-four w-100" multiple="multiple"
+                                name="states[]">
+                            <option selected value="AL">Alabama</option>
+                            <option selected value="WY">Wyoming</option>
+                            <option value="WY">Coming</option>
+                            <option value="WY">Hanry Die</option>
+                            <option value="WY">John Doe</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@await Component.InvokeAsync("ColorDropdown")
+
+@await Component.InvokeAsync(BaseConst.DROP_DROW_VC, BaseConst.SYS_FLEX_CODE.COLOR)
+
+
+<div class="row app-form">
+    <label class="form-label">Basic</label>
+    <select class="select-example form-select select-basic" name="state">
+        <option value="AL">Alabama</option>
+        <option value="AL">Wyoming</option>
+        <option value="WY">Coming</option>
+        <option value="WY">Hanry Die</option>
+        <option value="WY">John Doe</option>
+    </select>
+</div>
+
+<div class="row my-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Basic</h5>
+            </div>
+            <div class="card-body">
+                <div class="dates">
+                    <form class="app-form">
+                        <input class="form-control basic-date" placeholder="YYYY-MM-DD" type="text">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Basic</h5>
+            </div>
+            <div class="card-body">
+                <div class="dates">
+                    <form class="app-form">
+                        <input class="form-control basic-date" placeholder="YYYY-MM-DD" type="text">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form class="app-form mt-5">
+    <label class="form-label" for="textareaexample">Simple textarea</label>
+    <textarea class="form-control" id="textareaexample"
+              placeholder="Some text..."
+              rows="2"></textarea>
+</form>
+
+
+<!-- Form Validation start -->
+<div class="row mt-5">
+    <!-- Custom Styles start -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="app-form rounded-control row g-3 needs-validation">
+                    <div class="col-md-4">
+                        <label class="form-label" for="validationCustom01">First name</label>
+                        <input class="form-control" id="validationCustom01" required type="text"
+                               value="Mark">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="validationCustom02">Last name</label>
+                        <input class="form-control" id="validationCustom02" required type="text"
+                               value="Otto">
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="validationCustomUsername">Username</label>
+                        <div class="input-group has-validation">
+                            @*   <span class="input-group-text" id="inputGroupPrepend">@</span> *@
+                            <input aria-describedby="inputGroupPrepend" class="form-control"
+                                   id="validationCustomUsername"
+                                   required type="text">
+                            <div class="invalid-feedback">
+                                Please choose a username.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="validationCustom03">City</label>
+                        <input class="form-control" id="validationCustom03" required type="text">
+                        <div class="invalid-feedback">
+                            Please provide a valid city.
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="validationCustom04">State</label>
+                        <select class="form-select" id="validationCustom04" required>
+                            <option disabled selected value="">Choose...</option>
+                            <option>...</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a valid state.
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="validationCustom05">Zip</label>
+                        <input class="form-control" id="validationCustom05" required type="text">
+                        <div class="invalid-feedback">
+                            Please provide a valid zip.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check d-flex flex-wrap gap-1">
+                            <input class="form-check-input mg-2" id="invalidCheck" required
+                                   type="checkbox" value="">
+                            <label class="form-check-label" for="invalidCheck">
+                                Agree to terms and conditions
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree before submitting.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary b-r-22" type="submit">Submit form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Custom Styles end -->
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex flex-column gap-2">
+                <h5>Tooltips</h5>
+                <p class="text-secondary">
+                    If your form layout allows it, you can swap the SP <span class="text-danger"> .{valid|invalid}-feedback</span> classes for
+                    <span class="text-danger"> .{valid|invalid}-tooltip</span> classes to display
+                    validation feedback
+                    in a styled tooltip. Be sure to
+                    have a parent with <span class="text-danger">position: relative </span>on it for
+                    tooltip
+                    positioning. In the example below, our
+                    column classes have this already, but your project may require an alternative
+                    setup.
+                </p>
+            </div>
+            <div class="card-body">
+                <form class="row g-3 app-form rounded-control" id="form-validation">
+                    <div class="col-md-6">
+                        <label class="form-label" for="userName">User Name</label>
+                        <input class="form-control" id="userName" name="userName" type="text">
+                        <div class="mt-1">
+                            <span class="text-danger" id="userNameError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="email">Email</label>
+                        <input class="form-control" id="email" type="email">
+                        <div class="mt-1">
+                            <span class="text-danger" id="emailError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="password">Password</label>
+                        <input class="form-control" id="password" type="password">
+                        <div class="mt-1">
+                            <span class="text-danger" id="passwordError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="address">Address</label>
+                        <input class="form-control" id="address" placeholder="1234 Main St"
+                               type="text">
+                        <div class="mt-1">
+                            <span class="text-danger" id="addressError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="address2">Address 2</label>
+                        <input class="form-control" id="address2" placeholder="Address" type="text">
+                        <div class="mt-1">
+                            <span class="text-danger" id="addressError2"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="city">City</label>
+                        <input class="form-control" id="city" type="text">
+                        <div class="mt-1">
+                            <span class="text-danger" id="cityError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label" for="zipCode">Zip</label>
+                        <input class="form-control" id="zipCode" type="text">
+                        <div class="mt-1">
+                            <span class="text-danger" id="zipCodeError"></span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check d-flex gap-1">
+                            <input class="form-check-input mg-2" id="gridCheck" type="checkbox">
+                            <label class="form-check-label" for="gridCheck">
+                                Check me out
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary b-r-22" type="submit" value="Submit">
+                            Submit
+                            form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Form Validation end -->
+@section Scripts {
+    <script>
+
+
+        $(document).ready(function () {
+
+            let userTable;
+
+
+            userTable = $('#data-grid-user').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/User/GetUser',
+                    type: 'POST',
+                      data: function (d) {
+                        d.username = $('#search-username').val();
+                        d.email = $('#search-email').val();
+                    }
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'username' },
+
+                    { data: 'email' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-warning" onclick="updateUser(${data}, '${row.email}', '${row.username}')">Edit</button>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-danger" onclick="delUser(${data}, '${row.username}')">Delete</button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Event Search
+            $('#searchBtn').click(function () {
+                userTable.ajax.reload();
+            });
+
+            $('#resetBtn').click(function () {
+                $('#search-username').val('');
+                $('#search-email').val('');
+                userTable.ajax.reload();
+            });
+
+            $('#sweet-alert-1').on('click', function () {
+                Swal.fire({
+                    title: 'Test Sweet Alert',
+                    customClass: {
+                        confirmButton: 'btn btn-primary',
+                    },
+                    buttonsStyling: false
+                })
+            })
+        });
+
+        config = {
+            enableTime: false,
+        }
+
+
+        $('.select-basic-multiple-four').select2();
+
+        flatpickr(".basic-date",config);
+
+    </script>
+}
+

@@ -5,69 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Example_POS</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link href="../assets/images/logo/favicon.png" rel="icon" type="image/x-icon">
+    <link href="../assets/images/logo/favicon.png" rel="shortcut icon" type="image/x-icon">
+
+   @*  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Example_POS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Example_POS.styles.css" asp-append-version="true" /> *@
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.3.2/datatables.min.css" rel="stylesheet" integrity="sha384-oy6ZmHnH9nTuDaccEOUPX5BSJbGKwDpz3u3XiFJBdNXDpAAZh28v/4zfMCU7o63p" crossorigin="anonymous" />
-</head>
-<body>  
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Example_POS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Index">Register</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">User</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Category" asp-action="Index">Category</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product</a>
-                        </li>
-                    </ul>
-                </div>
+    <!-- iconoir icon css  -->
+    <link href="~/axelit/vendor/ionio-icon/css/iconoir.css" rel="stylesheet" asp-append-version="true" />
 
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" asp-area="" asp-controller="Logout" asp-action="Index">Logout</a>
+    <!-- tabler icons-->
+    <link href="~/axelit/vendor/tabler-icons/tabler-icons.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+    <!--flag Icon css-->
+    <link href="~/axelit/vendor/flag-icons-master/flag-icon.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+
+    <!-- Bootstrap css-->
+    <link href="~/axelit/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+    <!-- simplebar css-->
+    <link href="~/axelit/vendor/simplebar/simplebar.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+    <!-- App css-->
+    <link href="~/axelit/css/style.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+    <!-- Responsive css-->
+    <link href="~/axelit/css/responsive.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+    <!-- Data Table css-->
+    <link rel="stylesheet" type="text/css" href="~/axelit/vendor/datatable/jquery.dataTables.min.css" asp-append-version="true">
+    <link rel="stylesheet" type="text/css" href="~/axelit/vendor/datatable/datatable2/buttons.dataTables.min.css" asp-append-version="true">
+
+    <!-- Selecrt css -->
+    <link href="~/axelit/vendor/select/select2.min.css" rel="stylesheet" type="text/css" asp-append-version="true">
+
+    <link href="~/axelit/vendor/datepikar/flatpickr.min.css" rel="stylesheet" type="text/css" asp-append-version="true">
+</head>
+<body>
+
+    <div class="app-wrapper">
+
+        <div class="loader-wrapper">
+            <div class="app-loader">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Menu Navigation starts -->
+        <nav>
+            <div class="app-logo">
+                <a class="logo d-inline-block" href="index.html">
+                    <img alt="#" src="../assets/images/logo/1.png">
+                </a>
+
+                <span class="bg-light-primary toggle-semi-nav">
+                    <i class="ti ti-chevrons-right f-s-20"></i>
+                </span>
+            </div>
+            <div class="app-nav" id="app-simple-bar">
+                <ul class="main-nav p-0 mt-2">
+                    <li class="menu-title"><span>Component</span></li>
+
+                    <li>
+                        <a aria-expanded="false" class="" data-bs-toggle="collapse" href="#ready_to_use">
+                            <i class="iconoir-report-columns"></i>
+                            Ready to use <span class="badge text-success-dark bg-success-400 badge-notification ms-2">New</span>
+                        </a>
+                        <ul class="collapse" id="ready_to_use">
+                            <li><a asp-area="" asp-controller="Component" asp-action="Index">Test Component</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="menu-title"><span>Pages</span></li>
+
+                    <li>
+                        <a aria-expanded="false" class="" data-bs-toggle="collapse" href="#auth_pages">
+                            <i class="ph-duotone  ph-notebook"></i> Inventory
+                        </a>
+                        <ul class="collapse" id="auth_pages">
+                            <li>
+                                <a aria-expanded="false" class="" data-bs-toggle="collapse" href="#setup_pages">
+                                    <i class="ph-duotone  ph-notebook"></i> Setup
+                                </a>
+                                <ul class="collapse" id="setup_pages">
+                                    <li><a asp-area="" asp-controller="Product" asp-action="Index">Product</a></li>
+                                    <li><a asp-area="" asp-controller="Category" asp-action="Index">Category</a></li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a aria-expanded="false" class="" data-bs-toggle="collapse" href="#transaction_pages">
+                                    <i class="ph-duotone  ph-notebook"></i> Transaction
+                                </a>
+                                <ul class="collapse" id="transaction_pages">
+                                    <li><a href="sign_in.html">Stock Out</a></li>
+                                    <li><a href="sign_in.html">Stock In</a></li>
+                                </ul>
+                            </li>
+
+                        </ul>
                     </li>
                 </ul>
-
-                
             </div>
+
+            <div class="menu-navs">
+                <span class="menu-previous"><i class="ti ti-chevron-left"></i></span>
+                <span class="menu-next"><i class="ti ti-chevron-right"></i></span>
+            </div>
+
         </nav>
-    </header>
-    <div class="p-3">
-        <main role="main">
-            @RenderBody()
-        </main>
+        <!-- Menu Navigation ends -->
+
+        <div class="app-content">
+            <div class="container-fluid">
+                <main role="main">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
+ 
 
     @* <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2568 - Example_POS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer> *@
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+ 
     <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.3.2/datatables.min.js" integrity="sha384-F5wD4YVHPFcdPbOt91vfXz6ZUTjeWsy4mJlvR4duPvlQdnq704Bh6DxV1BJy3gA2" crossorigin="anonymous"></script>
+
+    <!-- latest jquery-->
+    <script src="~/axelit/js/jquery-3.6.3.min.js"></script>
+
+    <!-- Bootstrap js-->
+    <script src="~/axelit/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- Simple bar js-->
+    <script src="~/axelit/vendor/simplebar/simplebar.js"></script>
+
+    <!-- phosphor js -->
+    <script src="~/axelit/vendor/phosphor/phosphor.js"></script>
+
+    <!-- rating-->
+    <script src="~/axelit/vendor/rating/jquery.barrating.min.js"></script>
+
+    <!-- js-->
+    <script src="~/axelit/js/ratings.js"></script>
+
+    <!-- App js-->
+    <script src="~/axelit/js/script.js"></script>
+
+    <!-- Customizer js-->
+
+    <script src="~/axelit/js/customizer.js"></script>
+
+    <!-- calendar js -->
+    <script src="~/axelit/js/calendar.js"></script>
+
+    <!-- Data Table js-->
+    <script src="~/axelit/vendor/datatable/jquery.dataTables.min.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/dataTables.buttons.min.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/jszip.min.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/pdfmake.min.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/vfs_fonts.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/buttons.html5.min.js"></script>
+    <script src="~/axelit/vendor/datatable/datatable2/buttons.print.min.js"></script>
+
+    <!-- Data Table js-->
+    <script src="~/axelit/js/data_table.js"></script>
+
+
+
+    <script src="~/axelits/vendor/notifications/toastify-js.js"></script>
+
+    <script src="~/axelit/vendor/sweetalert/sweetalert.js"></script> 
+
+    <script src="~/axelit/vendor/select/select2.min.js"></script>
+    <script src="~/axelit/vendor/datepikar/flatpickr.js"></script>
+
+    <script src="~/axelit/js/formvalidation.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
