@@ -32,17 +32,42 @@
     </div>
 
     <table id="data-grid-user" class="w-100 display patients-list-table dataTable">
-        <thead>
-            <tr>
-                <th scope="col">Id</th>
-                <th scope="col">Username</th>
-                <th scope="col">Email</th>
-                <th scope="col">Edit</th>
-                <th scope="col">Delete</th>
-            </tr>
-        </thead>
     </table>
 </div>
+
+
+
+<h2>DataTables - Inline Edit</h2>
+
+<button id="addBtn" class="btn btn-primary b-r-22">Add</button>
+
+<div class="app-scroll table-responsive app-datatable-default"> 
+    <table id="grid-inline-example" class="w-100 display patients-list-table dataTable">
+        <thead>
+            <tr>
+                <th>ชื่อ</th>
+                <th>อายุ</th>
+                <th>อีเมล</th>
+                <th>ลบ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>สมชาย</td>
+                <td>30</td>
+                <td>somchai@example.com</td>
+                <td><button class="btn btn-danger">Delete</button></td>
+            </tr>
+            <tr>
+                <td>วิภา</td>
+                <td>25</td>
+                <td>wipa@example.com</td>
+                <td><button class="btn btn-danger">Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 
 
 <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="exampleModal" tabindex="-1">
@@ -456,15 +481,19 @@
         </div>
     </div>
 </div>
+
+
+<div class="go-top" style="display: grid; background: conic-gradient( rgba(var(--info),1),rgba(var(--primary),1),rgba(var(--danger),1),rgba(var(--info-dark),1),rgba(var(--primary-dark),1),rgba(var(--danger-dark),1),  66%, rgba(var(--primary),.3) 66%);">
+    <span class="progress-value">
+        <i class="ti ti-chevron-up"></i>
+    </span>
+</div>
 <!-- Form Validation end -->
 @section Scripts {
     <script>
-
-
         $(document).ready(function () {
 
             let userTable;
-
 
             userTable = $('#data-grid-user').DataTable({
                 processing: true,
@@ -478,18 +507,19 @@
                     }
                 },
                 columns: [
-                    { data: 'id' },
-                    { data: 'username' },
-
-                    { data: 'email' },
+                    { data: 'id',title:'Id',type:'num' },
+                    { data: 'username',title:'Username',type:'string' },
+                    { data: 'email',title:'Email',type:'string' },
                     {
                         data: 'id',
+                        title: 'Edit',
                         render: function (data, type, row) {
                             return `<button class="btn btn-warning" onclick="updateUser(${data}, '${row.email}', '${row.username}')">Edit</button>`;
                         }
                     },
                     {
                         data: 'id',
+                        title: 'Delete',
                         render: function (data, type, row) {
                             return `<button class="btn btn-danger" onclick="delUser(${data}, '${row.username}')">Delete</button>`;
                         }
@@ -506,7 +536,7 @@
                 $('#search-username').val('');
                 $('#search-email').val('');
                 userTable.ajax.reload();
-            });
+              });
 
             $('#sweet-alert-1').on('click', function () {
                 Swal.fire({
@@ -517,17 +547,51 @@
                     buttonsStyling: false
                 })
             })
-        });
 
-        config = {
-            enableTime: false,
-        }
+            config = {
+                enableTime: false,
+            }
 
 
         $('.select-basic-multiple-four').select2();
 
         flatpickr(".basic-date",config);
 
+        var table = $('#grid-inline-example').DataTable();
+
+        $('#addBtn').on('click', function() {
+            table.row.add(['', '', '', '<button class="btn btn-danger">Delete</button>']).draw(false);
+        });
+
+        $('#grid-inline-example tbody').on('click', 'td', function () {
+            var cell = table.cell(this);
+            var originalValue = cell.data();
+
+            if ($(this).find('input').length > 0) return;
+
+            $(this).html('<input type="text" class="form-control" value="' + originalValue + '"/>');
+            $(this).find('input').focus();
+
+            $(this).find('input').on('blur keypress', function (e) {
+                if (e.type === 'blur' || e.which === 13) {
+                    var newValue = $(this).val();
+
+                    if (newValue === "") {
+                        alert("ห้ามปล่อยว่าง");
+                        input.focus();
+                        return;
+                    }
+
+                    cell.data(newValue).draw();
+                }
+            });
+        });
+
+        $('#grid-inline-example tbody').on('click', '.btn.btn-danger', function () {
+            var row = $(this).closest('tr');
+            table.row(row).remove().draw();
+        });
+    });
     </script>
 }
 
